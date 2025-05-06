@@ -12,7 +12,7 @@ This project should encompass the three big things of travelling for a concert:
 **If you modify our software, be sure to share your results, would love to see them.** 
 
 
-## License
+## Licensing - not yet official
 
 Project License - GNU General Public License v3.0 (GPLv3)
 
