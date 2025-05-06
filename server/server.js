@@ -1,5 +1,5 @@
-const fetchMovies = require('./files/api/modules/fetchMovies.js');
-const formatMovies = require('./files/api/modules/formatMovies.js');
+const fetchMovies = require('./files/api/modules/__ref_fetchMovies.js');
+const formatMovies = require('./files/api/modules/__ref_formatMovies.js');
 
 const express = require('express');
 const path = require('path');
