@@ -1,3 +1,4 @@
+const { emitWarning } = require('process');
 const fetchMovies = require('./files/api/modules/__ref_fetchMovies.js');
 const formatMovies = require('./files/api/modules/__ref_formatMovies.js');
 
@@ -7,10 +8,22 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'files')));
 
-app.get('/flights', async function (req, res) {res.send(formatMovies(await fetchMovies()));});
-app.get('/accomodations', async function (req, res) {res.send(formatMovies(await fetchMovies()));});
+app.get('/flights', async function (req, res) {
+    req.query.time;
+    res.send(formatMovies(await fetchMovies()));
+});
+
+app.get('/accomodations', async function (req, res) {
+    res.send(formatMovies(await fetchMovies()));
+});
+
+app.get('/event', async function (req, res) {
+    res.send(formatMovies(await fetchMovies()));
+});
 
 
 app.listen(3000, () => {
     console.log("Server now listening on http://localhost:3000/");
 });
+
+
