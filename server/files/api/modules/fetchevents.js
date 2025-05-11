@@ -3,9 +3,9 @@ const https = require('https');
 const apiKey = process.env.TICKETMASTER_API_KEY;
 var size = 5;
 var api = "https://app.ticketmaster.com/discovery/v2/events.json";
-var keyword = ["Billie Eilish"];
+//var keyword = ["Billie Eilish"];
 
-async function fetchEvents() {
+async function fetchEvents(keyword) {
 
 
         return new Promise((resolve, reject) => {
@@ -18,7 +18,6 @@ async function fetchEvents() {
                 response.on('end', () => {
                     try {
                         //const event = JSON.parse(data); // Assuming response is JSON
-
                         resolve(data);
                     } catch (error) {
                         reject(`Error parsing JSON for movie ${keyword}: ${error}`);

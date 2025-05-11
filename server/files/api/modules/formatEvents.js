@@ -14,7 +14,7 @@ function formatEvents(inputEvents) {
     let iEvents = JSON.parse(inputEvents);
 
     let events = new Array();
-
+    if (iEvents.page.totalElements !== 0) {
     iEvents._embedded.events.forEach(data => {
         let event ={};
 
@@ -33,5 +33,18 @@ function formatEvents(inputEvents) {
     return events;
 
 }
+else {
+        let event ={};
+        event.ID = "";
+        event.name = "No Event found";
+        event.localDate = "";
+        //event.venue = data.venues.name;
+        event.artist = "";
+        event.address = "";
+        events.push(event);
+        return events;
+    }
+}
+
 
 module.exports = formatEvents;

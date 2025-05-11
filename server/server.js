@@ -35,8 +35,10 @@ app.get('/accomodations', async function (req, res) {
 app.get('/event', async function (req, res) {
     res.send(formatMovies(await fetchMovies()));
 });
-app.get('/eventtest', async function (req, res) {
-    res.send(formatEvents(await fetchEvents()));
+
+app.get('/eventtest/', async function (req, res) {
+    const keyword = req.query.keyword;
+    res.send(formatEvents(await fetchEvents(keyword)));
 })
 
 app.listen(3000, () => {
