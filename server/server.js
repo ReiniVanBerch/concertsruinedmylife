@@ -7,7 +7,8 @@ const fetchEvents = require('./files/api/modules/fetchevents.js');
 const formatEvents = require('./files/api/modules/formatEvents.js');
 const fetchMovies = require('./files/api/modules/__ref_fetchMovies.js');
 const formatMovies = require('./files/api/modules/__ref_formatMovies.js');
-
+const eventDetails = require('./files/api/modules/fetcheventdetails.js');
+const formatEventDetails = require('./files/api/modules/formatEventDetails.js');
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -15,7 +16,6 @@ const swaggerUi = require('swagger-ui-express');
 
 
 //const swaggerDocument = require('./swagger.yaml');
-
 
 //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -39,6 +39,11 @@ app.get('/event', async function (req, res) {
 app.get('/eventtest/', async function (req, res) {
     const keyword = req.query.keyword;
     res.send(formatEvents(await fetchEvents(keyword)));
+})
+
+app.get('/eventtestdetails/:eventID', async function (req, res) {
+
+    res.send(formatEventDetails(await eventDetails(req.params.eventID)));
 })
 
 app.listen(3000, () => {
