@@ -1,21 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en">  
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CRML</title>
+        <link rel="stylesheet" href="../css/index.css" />
+        <script type="module" src="index.js"></script>
+        <script src=
+"https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    </head>
 
-<link rel="stylesheet" href="index.css" />
-<script type="module" src="index.js"></script>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRML</title>
-</head>
-<header>
-</header>
-<body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">CRML</a>
-</nav>
+    <body>
+        <header>Concerts ruined my life!</header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <a class="navbar-brand" href="#">CRML</a>
+            <a class="profile" href="myProfile">Profile</a>
+        </nav>
+        <main>
+            <div>
+                <form id="artistSearch">
+                    <h2>what gig are you looking for?</h2>
+                    <input name="query" required placeholder="artist and city or venue"><button type="button">Search</button>
+                </form>
+            </div>
+
+            <div>
+                <form id="transportationSearch">
+                    <h2>let's sort out travel details</h2>
+                    <fieldset>
+                        
+                        <div>
+                            <legend>transportation</legend>
+                            <label for="departureLocation">from</label>
+                            <input type="text" id="departureLocation" name="departureLocation" placeholder="city or airport" maxlength="100" required>
+
+                            <label for="destinationLocation">to</label>
+                            <input type="text" id="destinationLocation" name="destinationLocation" placeholder="city or airport" maxlength="100" required>
+
+                            <label for="departureDate">depart on</label>
+                            <input type="date" id="departureDate" name="departureDate" placeholder="add Date" maxlength="100" required>
+
+                            <label for="returnDate">return on</label>
+                            <input type="date" id="returnDate" name="returnDate" placeholder="add Date" required>
+
+                            <label for="numberTravellers">travellers</label>
+                            <input type="number" id="numberTravellers" name="numberTravellers" value=1 max="13" min="1" required>
+                            <br>
+
+                            <input type="checkbox" id="TransportDiffersFromAccom" name="TransportDiffersFromAccom"  value="differentDetails" >
+                            <label for="TransportDiffersFromAccom">transportation details differ from accommodation details</label> 
+                            <script type="text/javascript">
+                                $(document).ready(function() {
+                                    $('input[type="checkbox"]').click(function() {
+                                        var inputValue = $(this).attr("value");
+                                        $("." + inputValue).toggle();
+                                    });
+                                });
+                            </script>
+                        </div>
+
+
+                        <div class="differentDetails selectt">
+                            <br>
+                            <legend>accommodation</legend>
+
+                            <label for="checkInDate">check in date</label>
+                            <input type="date" id="checkInDate" name="checkInDate" placeholder="add Date" required>
+
+                            <label for="checkOutDate">check out date</label>
+                            <input type="date" id="checkOutDate" name="checkOutDate" placeholder="add Date" required>
+
+                            <label for="accomGuests">guests at accommodation</label>
+                            <input type="number" id="accomGuests" name="accomGuests" value=1 max="13" min="1" required>
+                            <br>
+                        </div>
+                        
+
+                      <!--  <label for="checkInDifferentToDeparture">different check-in date</label>
+                        <input type="checkbox" id="checkInDifferentToDeparture" name="checkInDifferentToDeparture">
+
+                        <label for="checkOutDifferentToReturn">different check-out date</label>
+                        <input type="checkbox" id="checkInDifferentToDeparture" name="checkInDifferentToDeparture">
+
+                        <label for="difNumTravAtAccom">more/less travellers at accommodation</label>
+                        <input type="checkbox" id="difNumTravAtAccom" name="difNumTravAtAccom"> -->
+                        <br>
+
+                        <button type="button" value="Search">Search</button>
+                    </fieldset>
+
+
+                </form>
+            </div>
+
+        
+        </main>
+
+        <footer>
+            <ul>
+                <li>
+                    Visit us at
+                    <a href="https://www.fh-campuswien.ac.at/" target="_blank">UAS Campus Vienna</a>
+                </li>
+            </ul>
+        </footer>
     
-</body>
+    </body>
 
 
 </html>
