@@ -24,7 +24,7 @@ const swaggerUi = require('swagger-ui-express');
 app.use(express.static(path.join(__dirname, 'files')));
 
 app.get('/flights', async function (req, res) {
-    res.send(formatFlight(await fetchFlights()));
+    res.send((await fetchFlights()));
 });
 
 app.get('/accomodations', async function (req, res) {

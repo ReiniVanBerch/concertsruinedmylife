@@ -1,60 +1,82 @@
-const fetch = require('node-fetch'); // For CommonJS modules (typical Node.js)
-// If you are using ES Modules (e.g., "type": "module" in package.json):
-// import fetch from 'node-fetch';
+// amadeusTokenManager.js
 
-// Your Amadeus API Credentials - Replace with your actual credentials
+const fet = require('node-fetch'); // Or your preferred HTTP client like axios
+
+// Best practice: Store credentials in environment variables
 const AMADEUS_CLIENT_ID = process.env.AMADEUS_KEY;
 const AMADEUS_CLIENT_SECRET = process.env.AMADEUS_SECRET;
-
 const tokenUrl = 'https://test.api.amadeus.com/v1/security/oauth2/token';
 
-async function AmadeusToken() {
-    // Prepare the data for x-www-form-urlencoded body
+let currentToken = null;
+let tokenExpiryTime = 0; // Will store the timestamp when the token expires
+
+/**
+ * Fetches a new access token from Amadeus.
+ */
+async function fetchNewAccessToken() {
+    if (!AMADEUS_CLIENT_ID || !AMADEUS_CLIENT_SECRET) {
+        console.error("Amadeus client ID or secret is not configured in environment variables.");
+        throw new Error("Amadeus API credentials missing.");
+    }
+
     const params = new URLSearchParams();
     params.append('grant_type', 'client_credentials');
     params.append('client_id', AMADEUS_CLIENT_ID);
     params.append('client_secret', AMADEUS_CLIENT_SECRET);
 
     try {
-        const response = await fetch(tokenUrl, {
+        console.log("Fetching new Amadeus access token...");
+        const response = await fet(tokenUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
-            body: params // URLSearchParams will be correctly stringified
+            body: params
         });
 
         if (!response.ok) {
-            // Try to get more details from the error response body
-            let errorDetails = await response.text(); // Get raw text first
-            try {
-                errorDetails = JSON.parse(errorDetails); // Try to parse as JSON
-            } catch (e) {
-                // If not JSON, use the raw text
-            }
-            console.error('Error response details:', errorDetails);
-            throw new Error(`Failed to fetch access token: ${response.status} ${response.statusText}`);
+            let errorDetails = await response.text();
+            try { errorDetails = JSON.parse(errorDetails); } catch (e) { /* Keep as text */ }
+            console.error('Error fetching Amadeus token:', response.status, errorDetails);
+            throw new Error(`Failed to fetch Amadeus access token: ${response.status}`);
         }
 
         const tokenData = await response.json();
-        console.log('Access Token Info:', tokenData);
-        // Typically, you'll want to return the access_token and possibly expires_in
-        // tokenData will look something like:
-        // {
-        //   "type": "amadeusOAuth2Token",
-        //   "username": "your_email@example.com",
-        //   "application_name": "Your Application Name",
-        //   "client_id": "YOUR_AMADEUS_API_KEY",
-        //   "token_type": "Bearer",
-        //   "access_token": "VERY_LONG_TOKEN_STRING",
-        //   "expires_in": 1799, // Typically in seconds (e.g., 30 minutes)
-        //   "state": "approved",
-        //   "scope": ""
-        // }
-        return tokenData.access_token; // Or the whole object if you need more info
+        // tokenData example: { "access_token": "...", "expires_in": 1799, ... }
+
+        currentToken = tokenData.access_token;
+        // expires_in is in seconds. Calculate expiry time.
+        // Add a small buffer (e.g., 60 seconds) to refresh token before it actually expires.
+        const bufferSeconds = 60;
+        tokenExpiryTime = Date.now() + (tokenData.expires_in - bufferSeconds) * 1000;
+
+        console.log('New Amadeus access token obtained and stored.');
+        return currentToken;
 
     } catch (error) {
-        console.error('Error in getAmadeusAccessToken:', error.message);
-        throw error; // Re-throw the error to be handled by the caller
+        console.error('Exception in fetchNewAccessToken:', error.message);
+        // Nullify current token on failure to ensure retry
+        currentToken = null;
+        tokenExpiryTime = 0;
+        throw error;
     }
 }
+
+/**
+ * Retrieves the current valid Amadeus access token.
+ * If the token is expired or not available, it fetches a new one.
+ * @returns {Promise<string>} The Amadeus access token.
+ */
+async function getValidAccessToken() {
+    if (currentToken && Date.now() < tokenExpiryTime) {
+        // console.log('Returning existing valid Amadeus token.');
+        return currentToken;
+    } else {
+        // console.log('Amadeus token is null, invalid, or expired. Fetching a new one.');
+        return await fetchNewAccessToken();
+    }
+}
+
+module.exports = {
+    getValidAccessToken
+};

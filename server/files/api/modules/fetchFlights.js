@@ -1,5 +1,6 @@
 const https = require('https');
-//const bearerToken = await tokengetter();
+const tokenManager = require('./AmadeusToken.js');
+
 var passengers = 2;
 var returns = 5;
 var api = "https://test.api.amadeus.com/v2/shopping/flight-offers";
@@ -7,7 +8,7 @@ var api = "https://test.api.amadeus.com/v2/shopping/flight-offers";
 
 async function fetchFlights(Depa, Dest, Depadate, ReturnDate) {
 
-
+    const bearerToken = await tokenManager.getValidAccessToken();
     return new Promise((resolve, reject) => {
         const url = `${api}?originLocationCode=${Depa}&destinationLocationCode=${Desr}&departureDate={${Depadate}}&returnDate={${ReturnDate}}&adults=${passengers}&max=${returns}`;
         const flights = [];
