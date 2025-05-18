@@ -18,12 +18,20 @@
         </nav>
         <main>
             <div>
-                <form id="artistSearch">
+                <div id="artistSearch">
                     <h2>what gig are you looking for?</h2>
-                    <input name="query" required placeholder="artist and city or venue"><button type="button">Search</button>
-                </form>
-            </div>
 
+                    <input placeholder="artist and city or venue" id="keywordInput" type="text"><button id="searchButton">Get Details</button>
+                </div>
+            </div>
+            <div id="event-details-container">
+                <h1>Event Details</h1>
+
+                <div id="eventsContainer">
+                    <p>Enter a keyword and click "Search Events" to see results.</p>
+                </div>
+
+            </div>
             <div>
                 <form id="transportationSearch">
                     <h2>let's sort out travel details</h2>

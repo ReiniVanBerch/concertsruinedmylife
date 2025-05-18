@@ -38,11 +38,20 @@ app.get('/event', async function (req, res) {
 
 app.get('/eventtest/', async function (req, res) {
     const keyword = req.query.keyword;
-    res.send(formatEvents(await fetchEvents(keyword)));
+    try {
+        const eventsData = await fetchEvents(keyword);
+        console.log('Type of eventsData:', typeof eventsData);
+        console.log('Content of eventsData:', eventsData);
+        const formattedData = formatEvents(eventsData);
+        res.status(200).send(formattedData); // Send status with data
+    } catch (error) {
+        console.error(`Error in /eventtest/ for keyword "${keyword}":`, error);
+        res.status(500).send({ message: "An error occurred on the server.", details: error.message });
+    }
 })
 
 app.get('/eventtestdetails/:eventID', async function (req, res) {
-
+    res.status(200);
     res.send(formatEventDetails(await eventDetails(req.params.eventID)));
 })
 
