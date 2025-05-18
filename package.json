@@ -1,0 +1,20 @@
+{
+  "name": "concertsruinedmylife",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.9.0",
+    "bootstrap": "^5.3.6",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
