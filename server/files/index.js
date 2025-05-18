@@ -25,7 +25,7 @@ async function displayEvents(keyword) {
     eventsContainer.innerHTML = '<p>Loading events...</p>';
 
     const events = await getEvents(keyword);
-    eventsContainer.innerHTML = '';
+    eventsContainer.innerHTML = ''; // Clear loading message
 
     if (events && events.length > 0) {
         if (events[0].name === "No Event found") {
@@ -34,16 +34,37 @@ async function displayEvents(keyword) {
             eventsContainer.innerHTML = '<p>Sorry, an error occurred while fetching events. Please check the console for details and try again.</p>';
         } else {
             const ul = document.createElement('ul');
+            ul.className = 'event-list'; // Optional: for styling
+
             events.forEach(event => {
                 const li = document.createElement('li');
-                li.innerHTML = `
+                li.className = 'event-list-item'; // Optional: for styling
+
+                // Event Information
+                const infoDiv = document.createElement('div');
+                infoDiv.innerHTML = `
                     <strong>ID:</strong> ${event.ID || 'N/A'}<br>
                     <strong>Name:</strong> ${event.name || 'N/A'}<br>
                     <strong>Date:</strong> ${event.localDate ? new Date(event.localDate).toLocaleString() : 'N/A'}<br>
                     <strong>Artist/Info:</strong> ${event.artist || 'N/A'}<br>
                     <strong>Address/Note:</strong> ${event.address || 'N/A'}
                 `;
-                ul.appendChild(li);
+                li.appendChild(infoDiv);
+
+                // "View Details" Button for this specific event
+                const viewDetailsButton = document.createElement('button');
+                viewDetailsButton.textContent = 'Select this Event';
+                viewDetailsButton.className = 'details-button'; // Optional: for styling
+                viewDetailsButton.style.marginTop = '5px'; // Basic styling
+
+                // Attach event listener directly to this button
+                // This correctly captures the 'event.ID' for THIS event item
+                viewDetailsButton.addEventListener('click', () => {
+                    fetchAndDisplayEventDetails(event.ID);
+                });
+
+                li.appendChild(viewDetailsButton); // Add button to the list item
+                ul.appendChild(li); // Add list item to the list
             });
             eventsContainer.appendChild(ul);
         }
@@ -91,7 +112,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchEvents();
             }
         });
+
+
+
     }
+
+
+
+
 });
 
 
