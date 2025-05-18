@@ -5,7 +5,7 @@ require('dotenv').config()
 const { emitWarning } = require('process');
 const fetchEvents = require('./files/api/modules/fetchevents.js');
 const formatEvents = require('./files/api/modules/formatEvents.js');
-const fetchMovies = require('./files/api/modules/__ref_fetchMovies.js');
+const fetchFlights = require('./files/api/modules/fetchFlights.js');
 const formatMovies = require('./files/api/modules/__ref_formatMovies.js');
 const eventDetails = require('./files/api/modules/fetcheventdetails.js');
 const formatEventDetails = require('./files/api/modules/formatEventDetails.js');
@@ -24,19 +24,16 @@ const swaggerUi = require('swagger-ui-express');
 app.use(express.static(path.join(__dirname, 'files')));
 
 app.get('/flights', async function (req, res) {
-    req.query.time;
-    res.send(formatMovies(await fetchMovies()));
+    res.send(formatFlight(await fetchFlights()));
 });
 
 app.get('/accomodations', async function (req, res) {
     res.send(formatMovies(await fetchMovies()));
 });
 
-app.get('/event', async function (req, res) {
-    res.send(formatMovies(await fetchMovies()));
-});
 
-app.get('/eventtest/', async function (req, res) {
+
+app.get('/event/', async function (req, res) {
     const keyword = req.query.keyword;
     try {
         const eventsData = await fetchEvents(keyword);
@@ -50,7 +47,7 @@ app.get('/eventtest/', async function (req, res) {
     }
 })
 
-app.get('/eventtestdetails/:eventID', async function (req, res) {
+app.get('/eventdetails/:eventID', async function (req, res) {
     res.status(200);
     res.send(formatEventDetails(await eventDetails(req.params.eventID)));
 })

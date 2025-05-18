@@ -2,7 +2,7 @@
 
 async function getEvents(keyword) {
     try {
-        const apiUrl = `/eventtest/?keyword=${encodeURIComponent(keyword)}`;
+        const apiUrl = `/event/?keyword=${encodeURIComponent(keyword)}`;
         const res = await fetch(apiUrl);
 
         if (!res.ok) {
@@ -158,7 +158,7 @@ async function fetchAndDisplayEventDetails(eventID) {
 
     try {
         // Construct the API URL using the provided eventID
-        const apiUrl = `/eventtestdetails/${eventID}`;
+        const apiUrl = `/eventdetails/${eventID}`;
 
         const response = await fetch(apiUrl);
 
