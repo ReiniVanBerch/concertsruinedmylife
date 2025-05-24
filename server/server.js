@@ -1,24 +1,44 @@
 require('dotenv').config()
 
 
+const express = require('express');
+const session = require('express-session');
+
+const path = require('path');
+const app = express();
+const swaggerUi = require('swagger-ui-express');
 
 const { emitWarning } = require('process');
+
 const fetchEvents = require('./files/api/modules/fetchevents.js');
 const formatEvents = require('./files/api/modules/formatEvents.js');
 const fetchFlights = require('./files/api/modules/fetchFlights.js');
 const formatMovies = require('./files/api/modules/__ref_formatMovies.js');
 const eventDetails = require('./files/api/modules/fetcheventdetails.js');
 const formatEventDetails = require('./files/api/modules/formatEventDetails.js');
-const express = require('express');
-const path = require('path');
-const app = express();
-const swaggerUi = require('swagger-ui-express');
+
+
 
 
 //const swaggerDocument = require('./swagger.yaml');
 
 //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
+
+app.get("/", (req, res) =>{
+    if(!req.session.sessionID){
+        let id = require('crypto').randomBytes(32).toString('hex');
+        console.log(id);
+        return id;
+    }
+})
 
 
 app.use(express.static(path.join(__dirname, 'files')));
