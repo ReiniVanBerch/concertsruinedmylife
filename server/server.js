@@ -32,13 +32,16 @@ app.use(session({
   cookie: { secure: false }
 }));
 
-app.get("/", (req, res) =>{
+
+ app.get("/", (req, res) =>{
     if(!req.session.sessionID){
         let id = require('crypto').randomBytes(32).toString('hex');
+        res.sendFile(path.join(__dirname, '../server/files/index.html'));
         console.log(id);
         return id;
     }
-})
+
+ })
 
 
 app.use(express.static(path.join(__dirname, 'files')));
