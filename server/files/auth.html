@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="post" action="/login/" id="auth">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username">
+
+        </div>
+
+
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password">
+            <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword()"></i>
+        </div>
+        <button type="submit" id="submit">Login</button>
+        <button type="button" id="switchButton" onclick="toggleRegister()">Switch to Register</button>
+
+    </form>
+    <script>
+    function toggleRegister() {
+        const form = document.getElementById('auth');
+        const submit = document.getElementById('submit');
+        const switchButton =  document.getElementById('switchButton');
+
+        const isLogin = form.getAttribute('action') === '/login/';
+
+        form.setAttribute('action', isLogin ? '/register/' : '/login/');
+        submit.innerHTML = isLogin ? 'Register' : 'Login';
+        switchButton.innerHTML = `Switch to ${isLogin ? 'Login' : 'Register'}`;
+    }
+
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.getElementById('toggleEye');
+        const isPassword = passwordInput.type === 'password';
+
+        passwordInput.type = isPassword ? 'text' : 'password';
+        toggleIcon.classList.toggle('fa-eye');
+        toggleIcon.classList.toggle('fa-eye-slash');
+    }
+    </script>
+</body>
+</html>

@@ -27,7 +27,39 @@ input {
 }
 
 
+.nav-bar {
+   grid-area: menu;
+}
 
+.nav-bar ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #33b5e5;
+}
+
+.nav-bar li {
+  display: inline;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-bar li a {
+  padding: 8px;
+  margin-bottom: 7px;
+  
+  color: #ffffff;
+}
+
+.nav-bar li a:hover {
+  background-color: #0099cc;
+}
+
+.nav-bar .active {
+  background-color: #04AA6D;
+}
 .grid-container {
   display: grid;
   grid-template-areas:
