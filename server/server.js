@@ -19,9 +19,9 @@ const formatMovies = require('./internal/api/__ref_formatMovies.js');
 const eventDetails = require('./internal/api/fetcheventdetails.js');
 const formatEventDetails = require('./internal/api/formatEventDetails.js');
 
-const loginUser = require('./internal/database/login.js');
-const registerUser = require('./internal/database/register.js');
-
+const login = require('./internal/database/login.js');
+const register = require('./internal/database/register.js');
+const allEvents = require('./internal/database/allEvents.js');
 
 //const swaggerDocument = require('./swagger.yaml');
 
@@ -78,45 +78,26 @@ app.get('/eventdetails/:eventID', async function (req, res) {
 //UserThingos
 //Login and Register
 app.post('/login/', async (req, res) => {
-
-    console.log("login request received");
-    let { username, password } = req.body;
-    let result = await loginUser(username, password);
-    if(result.success){
-
-        req.session.username = username;
-        res.status(200).send("Successfully logged in the user");
-    } else{
-        res.status(401).send("Incorrect Username or Password!");
-    }
+    login(req, res);
 });
 
 app.post('/register/', async (req, res) => {
-    console.log("register request received");
-    let { username, password } = req.body;
-
-    let result = await registerUser(username, password);
-    if(result.success){
-        req.session.username = username;
-        res.status(200).send("Sucessfully created the user");
-    } else{
-        res.status(409).send("Username already taken!");
-    }
+    register(req, res);
 });
 
 
 //See if loggedIn, and if username
 app.get('/profile/', (req, res) => {
   if (!req.session.username) {
-    return res.status(401).send('Not logged in');
+    res.status(401).send({success: false, message: 'Not logged in'});
+  }else{
+    res.status(200).send({success: true, message: `Welcome, ${req.session.username}`});
   }
-
-  res.status(200).send(`Welcome, ${req.session.username}`);
 });
 
 //Get Events assigned to User
 app.get('/profile/events/', async function (req, res) {
-    res.status(501).send("Yet to be implemented!, but right location");
+    allEvents(req, res);
 })
 
 //Get Specific Evetn assigned to user

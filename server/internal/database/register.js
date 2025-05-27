@@ -2,7 +2,10 @@ const bcrypt = require('bcrypt');
 const db = require('./databaseConnector.js');
 
 
-async function registerUser(username, password){
+async function register(req, res){
+    let { username, password } = req.body;
+
+
     console.log("registerUser request received");
 
     // Ensure they are strings (defensive programming)
@@ -18,10 +21,11 @@ async function registerUser(username, password){
 
         insertUser.run(username, hashed);
 
-        return { success: true, message: 'User registered' };
+        req.session.username = username;
+        res.status(200).send({ success: true, message: 'User registered' });
     } else {
-        return { success: false, message: 'Username already taken' };
+        res.status(409).send({ success: false, message: 'Username already taken' });
     }
 }
 
-module.exports = registerUser;
+module.exports = register;

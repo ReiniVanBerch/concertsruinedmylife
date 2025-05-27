@@ -9,21 +9,45 @@
     <form method="post" action="/login/" id="auth">
         <div>
             <label for="username">Username</label>
-            <input type="text" name="username" id="username">
-
+            <input type="text"
+                id="username"
+                name="username"
+                v-model="username"
+                pattern="^[a-zA-Z0-9_]{3,20}$"
+                oninvalid="toggleMismatch(this,'Username must be 3–20 characters and may only include letters, numbers, underscores, or dashes.' ,'usernameError')"
+                oninput="resetMismatch(this,'usernameError')"
+            required>
+            <p id="usernameError"></p>
         </div>
 
 
         <div>
             <label for="password">Password</label>
-            <input type="password" name="password" id="password">
+            <input
+                type="password"
+                id="password"
+                name="password"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                oninvalid="toggleMismatch(this, 'Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters',  'passwordError')"
+                oninput="resetMismatch(this, 'passwordError')"
+                required>
             <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword()"></i>
+            <p id="passwordError"></p>
         </div>
         <button type="submit" id="submit">Login</button>
         <button type="button" id="switchButton" onclick="toggleRegister()">Switch to Register</button>
 
     </form>
     <script>
+    function toggleMismatch(input, error, id){
+        input.setCustomValidity(error);
+        document.getElementById(id).textContent = error;
+    }
+    function resetMismatch(input, id){
+        input.setCustomValidity('');
+        document.getElementById('usernameError').textContent = '';
+    }
+
     function toggleRegister() {
         const form = document.getElementById('auth');
         const submit = document.getElementById('submit');
