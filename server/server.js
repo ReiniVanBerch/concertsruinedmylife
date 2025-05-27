@@ -41,6 +41,7 @@ app.use(session({
 
 
 
+
 app.get('/flights', async function (req, res) {
     res.send((await fetchFlights()));
 });
