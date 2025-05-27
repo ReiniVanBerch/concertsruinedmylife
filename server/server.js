@@ -12,15 +12,15 @@ const swaggerUi = require('swagger-ui-express');
 
 const { emitWarning } = require('process');
 
-const fetchEvents = require('./files/api/modules/fetchevents.js');
-const formatEvents = require('./files/api/modules/formatEvents.js');
-const fetchFlights = require('./files/api/modules/fetchFlights.js');
-const formatMovies = require('./files/api/modules/__ref_formatMovies.js');
-const eventDetails = require('./files/api/modules/fetcheventdetails.js');
-const formatEventDetails = require('./files/api/modules/formatEventDetails.js');
+const fetchEvents = require('./internal/api/fetchevents.js');
+const formatEvents = require('./internal/api/formatEvents.js');
+const fetchFlights = require('./internal/api/fetchFlights.js');
+const formatMovies = require('./internal/api/__ref_formatMovies.js');
+const eventDetails = require('./internal/api/fetcheventdetails.js');
+const formatEventDetails = require('./internal/api/formatEventDetails.js');
 
-const loginUser = require('./files/database/login.js');
-const registerUser = require('./files/database/register.js');
+const loginUser = require('./internal/database/login.js');
+const registerUser = require('./internal/database/register.js');
 
 
 //const swaggerDocument = require('./swagger.yaml');
