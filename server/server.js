@@ -76,18 +76,18 @@ app.get('/eventdetails/:eventID', async function (req, res) {
 
 
 //UserThingos
-//Login
+//Login and Register
 app.post('/login/', async (req, res) => {
 
     console.log("login request received");
     let { username, password } = req.body;
     let result = await loginUser(username, password);
     if(result.success){
-        res.status(200);
+
         req.session.username = username;
-        res.send("Successfully logged in the user");
+        res.status(200).send("Successfully logged in the user");
     } else{
-        res.status(400);
+        res.status(401).send("Incorrect Username or Password!");
     }
 });
 
@@ -97,36 +97,57 @@ app.post('/register/', async (req, res) => {
 
     let result = await registerUser(username, password);
     if(result.success){
-
         req.session.username = username;
         res.status(200).send("Sucessfully created the user");
     } else{
-        res.status(409).send("Username already taken");
+        res.status(409).send("Username already taken!");
     }
 });
 
+
+//See if loggedIn, and if username
 app.get('/profile/', (req, res) => {
   if (!req.session.username) {
     return res.status(401).send('Not logged in');
   }
 
-  res.send(`Welcome, ${req.session.username}`);
+  res.status(200).send(`Welcome, ${req.session.username}`);
 });
 
-
-app.get('/user/hmdcrml/:product', async function (req, res) {
-    res.status(200);
-    res.send(formatEventDetails(await eventDetails(req.params.eventID)));
+//Get Events assigned to User
+app.get('/profile/events/', async function (req, res) {
+    res.status(501).send("Yet to be implemented!, but right location");
 })
 
-app.put('/user/hmdcrml/:product', async function (req, res) {
-    res.status(200);
-    res.send(formatEventDetails(await eventDetails(req.params.eventID)));
+//Get Specific Evetn assigned to user
+app.get('/profile/events/:event', async function (req, res) {
+    res.status(501).send("Yet to be implemented!, but right location");
 })
 
-app.delete('/user/hmdcrml/:product', async function (req, res) {
-    res.status(200);
-    res.send(formatEventDetails(await eventDetails(req.params.eventID)));
+//Add an event to user
+app.put('/profile/events/add/:event', async function (req, res) {
+    res.status(501).send("Yet to be implemented!, but right location");
+})
+
+//Remove an event to user
+app.delete('/profile/events/:event/', async function (req, res) {
+    res.status(501).send("Yet to be implemented!, but right location");
+})
+
+//Add a costfactor to an event
+app.put('/profile/events/:event/:costfactor', async function (req, res) {
+    res.status(501).send("Yet to be implemented!, but right location");
+})
+
+//modify a costfactor to an event
+app.patch('/profile/events/:event/:costfactor', async function (req, res) {
+    res.status(501).send("Yet to be implemented!, but right location");
+})
+
+
+//remove a costfactor from an event
+app.delete('/profile/events/:event/:costfactor', async function (req, res) {
+    res.status(501).send("Yet to be implemented!, but right location");
 })
 
 app.listen(3000, () => {
