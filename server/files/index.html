@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>CRML</title>
-        <link rel="stylesheet" href="../css/index.css" />
+        <link rel="stylesheet" href="./css/index.css">
         <script type="module" src="index.js"></script>
         <script src=
 "https://code.jquery.com/jquery-1.12.4.min.js"></script>
@@ -12,9 +12,12 @@
 
     <body>
         <header>Concerts ruined my life!</header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand" href="#">CRML</a>
-            <a class="profile" href="myProfile">Profile</a>
+        <nav class="nav-bar">
+            <ul>
+                <li><a href="#">CRML</a></li>
+                <li><a href="myProfile">Profile</a></li>
+            </ul>
+            
         </nav>
         <main>
             <div>
@@ -38,7 +41,7 @@
                     <fieldset>
                         
                         <div>
-                            <legend>transportation</legend>
+                            <h3>transportation</h3>
                             <label for="departureLocation">from</label>
                             <input type="text" id="departureLocation" name="departureLocation" placeholder="city or airport" maxlength="100" required>
 
@@ -46,10 +49,10 @@
                             <input type="text" id="destinationLocation" name="destinationLocation" placeholder="city or airport" maxlength="100" required>
 
                             <label for="departureDate">depart on</label>
-                            <input type="date" id="departureDate" name="departureDate" placeholder="add Date" maxlength="100" required>
+                            <input type="date" id="departureDate" name="departureDate" required>
 
                             <label for="returnDate">return on</label>
-                            <input type="date" id="returnDate" name="returnDate" placeholder="add Date" required>
+                            <input type="date" id="returnDate" name="returnDate" required>
 
                             <label for="numberTravellers">travellers</label>
                             <input type="number" id="numberTravellers" name="numberTravellers" value=1 max="13" min="1" required>
@@ -57,7 +60,7 @@
 
                             <input type="checkbox" id="TransportDiffersFromAccom" name="TransportDiffersFromAccom"  value="differentDetails" >
                             <label for="TransportDiffersFromAccom">transportation details differ from accommodation details</label> 
-                            <script type="text/javascript">
+                            <script>
                                 $(document).ready(function() {
                                     $('input[type="checkbox"]').click(function() {
                                         var inputValue = $(this).attr("value");
@@ -70,13 +73,13 @@
 
                         <div class="differentDetails selectt">
                             <br>
-                            <legend>accommodation</legend>
+                            <h3>accommodation</h3>
 
                             <label for="checkInDate">check in date</label>
-                            <input type="date" id="checkInDate" name="checkInDate" placeholder="add Date" required>
+                            <input type="date" id="checkInDate" name="checkInDate" required>
 
                             <label for="checkOutDate">check out date</label>
-                            <input type="date" id="checkOutDate" name="checkOutDate" placeholder="add Date" required>
+                            <input type="date" id="checkOutDate" name="checkOutDate" required>
 
                             <label for="accomGuests">guests at accommodation</label>
                             <input type="number" id="accomGuests" name="accomGuests" value=1 max="13" min="1" required>
