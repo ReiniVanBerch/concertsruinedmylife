@@ -18,7 +18,7 @@ const fetchFlights = require('./internal/api/fetchFlights.js');
 const formatMovies = require('./internal/api/__ref_formatMovies.js');
 const eventDetails = require('./internal/api/fetcheventdetails.js');
 const formatEventDetails = require('./internal/api/formatEventDetails.js');
-
+const formatFlight = require('./internal/api/formatFlight.js');
 const login = require('./internal/database/login.js');
 const register = require('./internal/database/register.js');
 const allEvents = require('./internal/database/allEvents.js');
@@ -43,7 +43,7 @@ app.use(session({
 
 
 app.get('/flights', async function (req, res) {
-    res.send((await fetchFlights()));
+    res.send((await formatFlight(await fetchFlights("VIE", "LHR", '2025-06-13', '2025-06-27',3,4))));
 });
 
 app.get('/accomodations', async function (req, res) {

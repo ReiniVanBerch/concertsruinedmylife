@@ -6,11 +6,11 @@ var returns = 5;
 var api = "https://test.api.amadeus.com/v2/shopping/flight-offers";
 //var keyword = ["Billie Eilish"];
 
-async function fetchFlights(Depa, Dest, Depadate, ReturnDate) {
+async function fetchFlights(Depa, Dest, Depadate, ReturnDate,passengers, returns) {
 
     const bearerToken = await tokenManager.getValidAccessToken();
     return new Promise((resolve, reject) => {
-        const url = `${api}?originLocationCode=${Depa}&destinationLocationCode=${Dest}&departureDate={${Depadate}}&returnDate={${ReturnDate}}&adults=${passengers}&max=${returns}`;
+        const url = `${api}?originLocationCode=${Depa}&destinationLocationCode=${Dest}&departureDate=${Depadate}&returnDate=${ReturnDate}&adults=${passengers}&max=${returns}`;
         const flights = [];
         const options = {
             headers: {
