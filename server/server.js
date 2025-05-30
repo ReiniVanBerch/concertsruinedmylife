@@ -19,9 +19,12 @@ const formatMovies = require('./internal/api/__ref_formatMovies.js');
 const eventDetails = require('./internal/api/fetcheventdetails.js');
 const formatEventDetails = require('./internal/api/formatEventDetails.js');
 const formatFlight = require('./internal/api/formatFlight.js');
+const fetchAirport = require('./internal/api/fetchAirports.js');
+
 const login = require('./internal/database/login.js');
 const register = require('./internal/database/register.js');
 const allEvents = require('./internal/database/allEvents.js');
+
 
 //const swaggerDocument = require('./swagger.yaml');
 
@@ -49,7 +52,9 @@ app.get('/flights', async function (req, res) {
 app.get('/accomodations', async function (req, res) {
     res.send(formatMovies(await fetchMovies()));
 });
-
+app.get('/airport/:airport', async function (req, res) {
+    res.send(await fetchAirport(req.params.airport));
+})
 
 
 app.get('/event/', async function (req, res) {
@@ -67,8 +72,6 @@ app.get('/event/', async function (req, res) {
 })
 
 app.get('/eventdetails/:eventID', async function (req, res) {
-    session.
-    res.status(200);
     res.send(formatEventDetails(await eventDetails(req.params.eventID)));
 })
 
