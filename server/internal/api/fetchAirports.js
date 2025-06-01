@@ -1,17 +1,15 @@
 const https = require('https');
 const tokenManager = require('./AmadeusToken.js');
 
-var passengers = 2;
-var returns = 5;
-var api = "https://test.api.amadeus.com/v2/shopping/flight-offers";
-//var keyword = ["Billie Eilish"];
 
-async function fetchFlights(Depa, Dest, Depadate, ReturnDate,passengers, returns) {
+var api = "https://test.api.amadeus.com/v1/reference-data/";
+
+async function fetchAirports(City, ) {
 
     const bearerToken = await tokenManager.getValidAccessToken();
     return new Promise((resolve, reject) => {
-        const url = `${api}?originLocationCode=${Depa}&destinationLocationCode=${Dest}&departureDate=${Depadate}&returnDate=${ReturnDate}&adults=${passengers}&max=${returns}`;
-        const flights = [];
+        const url = `${api}locations?subType=AIRPORT&keyword=${City}`;
+        const airports = [];
         const options = {
             headers: {
                 'Authorization': `Bearer ${bearerToken}`
@@ -25,11 +23,11 @@ async function fetchFlights(Depa, Dest, Depadate, ReturnDate,passengers, returns
                     //const event = JSON.parse(data); // Assuming response is JSON
                     resolve(data);
                 } catch (error) {
-                    reject(`Error parsing JSON for movie ${Depa}: ${error}`);
+                    reject(`Error parsing JSON for Airport ${City}: ${error}`);
                 }
             });
         }).on('error', (error) => {
-            reject(`Error fetching data for ${Depa}: ${error}`);
+            reject(`Error fetching data for ${City}: ${error}`);
         });
     });
 
@@ -39,4 +37,4 @@ async function fetchFlights(Depa, Dest, Depadate, ReturnDate,passengers, returns
 }
 
 
-module.exports = fetchFlights;
+module.exports = fetchAirports;
