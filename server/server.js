@@ -21,7 +21,13 @@ const formatEventDetails = require('./internal/api/formatEventDetails.js');
 
 const login = require('./internal/database/login.js');
 const register = require('./internal/database/register.js');
-const allEvents = require('./internal/database/allEvents.js');
+
+const allEvents = require('./internal/database/events/allEvents.js');
+const putEvent = require('./internal/database/events/putEvent.js');
+const getEvent = require('./internal/database/events/getEvent.js');
+const deleteEvents = require('./internal/database/events/deleteEvents.js');
+
+
 
 //const swaggerDocument = require('./swagger.yaml');
 
@@ -106,7 +112,7 @@ app.get('/profile/events/:event', async function (req, res) {
 })
 
 //Add an event to user
-app.put('/profile/events/add/:event', async function (req, res) {
+app.put('/profile/events/:event', async function (req, res) {
     res.status(501).send("Yet to be implemented!, but right location");
 })
 
