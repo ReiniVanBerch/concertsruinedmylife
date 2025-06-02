@@ -24,6 +24,7 @@
     "express-session": "^1.18.1",
     "node-fetch": "^3.3.2",
     "sqlite3": "^5.1.7",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
   }
 }

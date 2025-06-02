@@ -1,21 +1,270 @@
-swagger: 2.0
+openapi: 3.0.0
 info:
-    title: "Sample API"
-    description: "API description in Markdown."
-    version: "1.0.0"
+  title: Concerts ruined my life APIs
+  version: 0.1.0
+  description: API for managing travel events, flights, and user profiles.
+servers:
+  - url: 'http://localhost:3000'
+    description: Development server
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid # Default name for express-session cookie
 
-host: "127.0.0.1:8000"
-basePath: "/v1"
-schemes:
-  - https
+# Global security definition (applies to all paths that don't override it)
+security:
+  - cookieAuth: []
 
 paths:
-  flights:
+  /flights:
     get:
-      summary: "Returns a list of users."
-      description: "Optional extended description in Markdown."
-      produces:
-        - application/json
+      summary: Retrieve flight offers
+      description: Fetches flight information based on origin, destination, and dates.
+      parameters:
+        - in: query
+          name: from
+          schema:
+            type: string
+          required: true
+          description: IATA code for the departure airport (e.g., VIE).
+        - in: query
+          name: to
+          schema:
+            type: string
+          required: true
+          description: IATA code for the destination airport (e.g., LHR).
+        - in: query
+          name: departDate
+          schema:
+            type: string
+            format: date
+          required: true
+          description: Departure date in YYYY-MM-DD format.
+        - in: query
+          name: returnDate
+          schema:
+            type: string
+            format: date
+          required: true
+          description: Return date in YYYY-MM-DD format.
+        - in: query
+          name: adults
+          schema:
+            type: integer
+          required: true
+          description: Number of adult passengers.
+        - in: query
+          name: children
+          schema:
+            type: integer
+          required: true
+          description: Number of child passengers.
       responses:
-        "200":
-          description: OK
+        '200':
+          description: A JSON array of formatted flight data.
+
+  /accomodations:
+    get:
+      summary: Retrieve accomodations (Not Implemented)
+      description: Placeholder for fetching accomodation data.
+      responses:
+        '200':
+          description: Formatted data.
+
+  /airport/{airport}:
+    get:
+      summary: Retrieve airport information by IATA code
+      description: Fetches details for a specific airport.
+      parameters:
+        - in: path
+          name: airport
+          schema:
+            type: string
+          required: true
+          description: IATA code of the airport to fetch (e.g., VIE).
+      responses:
+        '200':
+          description: Airport details.
+  
+  /event:
+    get:
+      summary: Search for events by keyword
+      description: Fetches a list of events from an external API based on a keyword.
+      parameters:
+        - in: query
+          name: keyword
+          schema:
+            type: string
+          required: true
+          description: Keyword to search for events (e.g., "concert").
+      responses:
+        '200':
+          description: A list of formatted events.
+        '500':
+          description: Server error.
+
+  /eventdetails/{eventID}:
+    get:
+      summary: Get details for a specific event
+      description: Fetches detailed information for a single event by its ID.
+      parameters:
+        - in: path
+          name: eventID
+          schema:
+            type: string
+          required: true
+          description: The unique ID of the event.
+      responses:
+        '200':
+          description: Detailed information about the event.
+
+  /login:
+    post:
+      summary: Logs a user in
+      description: Authenticates a user and starts a session.
+      # This route does not require the global security cookie
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful.
+        '401':
+          description: Unauthorized, invalid credentials.
+  
+  /logout:
+    get:
+      summary: Logs the current user out
+      description: Destroys the current user session.
+      responses:
+        '200':
+          description: Successfully logged out.
+
+  /register:
+    post:
+      summary: Registers a new user
+      description: Creates a new user account.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User created successfully.
+        '409':
+          description: Conflict, username already exists.
+
+  /auth:
+    get:
+      summary: Checks user authentication status
+      description: Verifies if a user session is active.
+      responses:
+        '200':
+          description: User is authenticated.
+        '402':
+          description: User is not authenticated.
+
+  /profile:
+    get:
+      summary: Redirects to user profile page
+      description: If authenticated, redirects to the profile HTML page. Requires session cookie.
+      responses:
+        '302':
+          description: Redirects to profile page.
+        '401':
+          description: Unauthorized.
+
+  /profile/events:
+    get:
+      summary: Get all events for the logged-in user
+      description: Retrieves a list of all events saved by the authenticated user.
+      responses:
+        '200':
+          description: A list of the user's events.
+        '401':
+          description: Unauthorized.
+    put:
+      summary: Add an event to the user's profile
+      description: Saves a new event to the authenticated user's profile.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: The event object to add.
+      responses:
+        '200':
+          description: Event added successfully.
+        '401':
+          description: Unauthorized.
+
+  /profile/events/{event}:
+    get:
+      summary: Get a specific event from the user's profile
+      description: Retrieves one event by its ID from the authenticated user's profile.
+      parameters:
+        - in: path
+          name: event
+          schema:
+            type: string
+          required: true
+          description: The ID of the event to retrieve.
+      responses:
+        '200':
+          description: The requested event object.
+        '401':
+          description: Unauthorized.
+        '404':
+          description: Event not found.
+    delete:
+      summary: Delete a specific event from the user's profile
+      description: Removes an event by its ID from the authenticated user's profile.
+      parameters:
+        - in: path
+          name: event
+          schema:
+            type: string
+          required: true
+          description: The ID of the event to delete.
+      responses:
+        '200':
+          description: Event deleted successfully.
+        '401':
+          description: Unauthorized.
+  
+  /profile/events/{event}/{costfactor}:
+    put:
+      summary: Add a cost factor to an event (Not Implemented)
+      responses:
+        '501':
+          description: Not Implemented.
+    patch:
+      summary: Modify a cost factor on an event (Not Implemented)
+      responses:
+        '501':
+          description: Not Implemented.
+    delete:
+      summary: Remove a cost factor from an event (Not Implemented)
+      responses:
+        '501':
+          description: Not Implemented.
