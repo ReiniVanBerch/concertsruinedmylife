@@ -1,23 +1,13 @@
 const db = require('../databaseConnector.js');
 
 async function putEvent(req, res){
+    console.log("I am in");
+    let uname = req.session.username;
+    let event = req.body.event;
+    console.log(req.body.event);
 
-    if (!req.session.username) {
-        return res.status(401).send('Not logged in');
-    }
-    else{
-        const getEvents = db.prepare('SELECT * FROM event WHERE username = ?');
-        const events = await getEvents.get(req.session.username);
-
-        if (events) {
-            res.status(200).send({success:true, message: events})
-        }
-        else{
-            res.status(200).send({success:true, message: "No Events found!"});
-        }
-    }
-
-
+    const events = db.prepare('INSERT INTO events (username, name) VALUES (?, ?)').run(uname, event);
+    //res.status(200).send("Created");
 }
 
 module.exports = putEvent;

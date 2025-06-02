@@ -22,7 +22,8 @@ async function register(req, res){
         insertUser.run(username, hashed);
 
         req.session.username = username;
-        res.status(200).send({ success: true, message: 'User registered' });
+        res.redirect(302, '/profile');
+
     } else {
         res.status(409).send({ success: false, message: 'Username already taken' });
     }

@@ -23,11 +23,12 @@ const fetchAirport = require('./internal/api/fetchAirports.js');
 
 const login = require('./internal/database/login.js');
 const register = require('./internal/database/register.js');
+const ensureAuthenticated = require('./internal/database/ensureAuthenticated.js');
 
 const allEvents = require('./internal/database/events/allEvents.js');
 const putEvent = require('./internal/database/events/putEvent.js');
 const getEvent = require('./internal/database/events/getEvent.js');
-const deleteEvents = require('./internal/database/events/deleteEvents.js');
+const deleteEvent = require('./internal/database/events/deleteEvent.js');
 
 
 
@@ -86,43 +87,42 @@ app.get('/eventdetails/:eventID', async function (req, res) {
 
 //UserThingos
 //Login and Register
-app.post('/login/', async (req, res) => {
+app.post('/login', async (req, res) => {
     login(req, res);
 });
 
-app.post('/register/', async (req, res) => {
+app.get('/logout', async (req, res) => {
+    req.session.destroy();
+    res.status(200).send("LoggedOut");
+});
+
+app.post('/register', async (req, res) => {
     register(req, res);
 });
 
-
-//See if loggedIn, and if username
-app.get('/profile/', (req, res) => {
-  if (!req.session.username) {
-    res.status(401).send({success: false, message: 'Not logged in'});
-  }else{
-    res.status(200).send({success: true, message: `Welcome, ${req.session.username}`});
-  }
+app.get('/auth', (req, res) => {
+    if (req.session.username) {
+        res.status(200).send("Everything good!"); 
+    }else{
+        res.status(402).send('notPermitted');
+    }
 });
 
+//See if loggedIn, and if username
+app.get('/profile', (req, res) => {ensureAuthenticated(req, res, ()=> {res.redirect(302, '/profile.html');});});
+
 //Get Events assigned to User
-app.get('/profile/events/', async function (req, res) {
-    allEvents(req, res);
-})
+app.get('/profile/events', async function (req, res) {    ensureAuthenticated(req, res, allEvents);})
 
 //Get Specific Evetn assigned to user
-app.get('/profile/events/:event', async function (req, res) {
-    res.status(501).send("Yet to be implemented!, but right location");
-})
+app.get('/profile/events/:event', async function (req, res) {    ensureAuthenticated(req, res, getEvent);})
+
 
 //Add an event to user
-app.put('/profile/events/:event', async function (req, res) {
-    res.status(501).send("Yet to be implemented!, but right location");
-})
+app.put('/profile/events', async function (req, res) {    ensureAuthenticated(req, res, putEvent);})
 
 //Remove an event to user
-app.delete('/profile/events/:event/', async function (req, res) {
-    res.status(501).send("Yet to be implemented!, but right location");
-})
+app.delete('/profile/events/:event', async function (req, res) {    ensureAuthenticated(req, res, deleteEvent);})
 
 //Add a costfactor to an event
 app.put('/profile/events/:event/:costfactor', async function (req, res) {

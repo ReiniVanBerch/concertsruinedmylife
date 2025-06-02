@@ -20,7 +20,8 @@ async function login(req, res){
             const result = await bcrypt.compare(password, passwordHash);
 
             if(result){
-                res.status(200).send({ success: true, message: 'User logged in' });
+                req.session.username = username;
+                res.redirect(302, '/profile');
             }
             else{
                 res.status(401).send({ success: false, message: 'Incorrect Username or Password' });

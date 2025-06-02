@@ -2,21 +2,19 @@ const db = require('../databaseConnector.js');
 
 async function deleteEvent(req, res){
 
-    if (!req.session.username) {
-        return res.status(401).send('Not logged in');
-    }
-    else{
-        const getEvents = db.prepare('SELECT * FROM event WHERE username = ?');
-        const events = await getEvents.get(req.session.username);
 
-        if (events) {
-            res.status(200).send({success:true, message: events})
-        }
-        else{
-            res.status(200).send({success:true, message: "No Events found!"});
-        }
-    }
+    const eventId = parseInt(req.params.event, 10);
+    console.log(typeof eventId);
+    const deleteEvent = db.prepare('DELETE FROM events WHERE username = ? AND id = ?');
+    const result = deleteEvent.run(req.session.username, eventId);
 
+    if (result.changes > 0) {
+        console.log("success");
+        res.status(200).send({ success: true, message: "Event deleted successfully." });
+    } else {
+        console.log("failure");
+        res.status(404).send({ success: false, message: "Event not found or unauthorized." });
+    }
 
 }
 

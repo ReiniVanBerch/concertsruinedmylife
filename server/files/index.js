@@ -1,5 +1,6 @@
 
 
+
 async function getEvents(keyword) {
     try {
         const apiUrl = `/event/?keyword=${encodeURIComponent(keyword)}`;
