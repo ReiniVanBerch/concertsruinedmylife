@@ -9,7 +9,7 @@ const app = express();
 // --- Swagger Integration ---
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs'); // Use the yamljs library
-const swaggerDocument = YAML.load('./swagger.yaml'); // Load the external yaml file
+const swaggerDocument = YAML.load('./server/swagger.yaml'); // Load the external yaml file
 
 const { emitWarning } = require('process');
 
@@ -27,10 +27,17 @@ const login = require('./internal/database/login.js');
 const register = require('./internal/database/register.js');
 const ensureAuthenticated = require('./internal/database/ensureAuthenticated.js');
 
+const eventCostpoints = require('./internal/database/costpoint/allCostpoints.js');
+const allCostpoints = require('./internal/database/costpoint/allCostpoints.js');
+const putCostpoint = require('./internal/database/costpoint/putCostpoint.js');
+const getCostpoint = require('./internal/database/costpoint/getCostpoint.js');
+const deleteCostpoint = require('./internal/database/costpoint/deleteCostpoint.js');
+
 const allEvents = require('./internal/database/events/allEvents.js');
 const putEvent = require('./internal/database/events/putEvent.js');
 const getEvent = require('./internal/database/events/getEvent.js');
 const deleteEvent = require('./internal/database/events/deleteEvent.js');
+
 const fetchHotels = require("./internal/api/fetchHotels");
 const formatHotels = require("./internal/api/formatHotels");
 
@@ -106,12 +113,12 @@ app.get('/auth', (req, res) => {
 //See if loggedIn, and if username
 app.get('/profile', (req, res) => { ensureAuthenticated(req, res, () => { res.redirect(302, '/profile.html'); }); });
 
+
 //Get Events assigned to User
 app.get('/profile/events', async function (req, res) { ensureAuthenticated(req, res, allEvents); })
 
 //Get Specific Evetn assigned to user
 app.get('/profile/events/:event', async function (req, res) { ensureAuthenticated(req, res, getEvent); })
-
 
 //Add an event to user
 app.put('/profile/events', async function (req, res) { ensureAuthenticated(req, res, putEvent); })
@@ -119,21 +126,22 @@ app.put('/profile/events', async function (req, res) { ensureAuthenticated(req, 
 //Remove an event to user
 app.delete('/profile/events/:event', async function (req, res) { ensureAuthenticated(req, res, deleteEvent); })
 
-//Add a costfactor to an event
-app.put('/profile/events/:event/:costfactor', async function (req, res) {
-    res.status(501).send("Yet to be implemented!, but right location");
-})
 
-//modify a costfactor to an event
-app.patch('/profile/events/:event/:costfactor', async function (req, res) {
-    res.status(501).send("Yet to be implemented!, but right location");
-})
+//Get all costpoints of a user
+app.get('/profile/events/costpoints', async function (req, res) { ensureAuthenticated(req, res, allCostpoints); })
 
+//Get all costpoints belonging to an event 
+app.get('/profile/events/:event/costpoints', async function (req, res) { ensureAuthenticated(req, res, eventCostpoints); })
 
-//remove a costfactor from an event
-app.delete('/profile/events/:event/:costfactor', async function (req, res) {
-    res.status(501).send("Yet to be implemented!, but right location");
-})
+//Get a specific sotpoint of a spcific event
+app.get('/profile/events/:costpoint', async function (req, res) { ensureAuthenticated(req, res, getCostpoint); })
+
+//Add a costpoint to user
+app.put('/profile/events/:event/:costpoint', async function (req, res) { ensureAuthenticated(req, res, putCostpoint); })
+
+//Remove an event to user
+app.delete('/profile/events/:costpoint', async function (req, res) { ensureAuthenticated(req, res, deleteCostpoint); })
+
 
 // --- Server Start ---
 app.listen(3000, () => {
