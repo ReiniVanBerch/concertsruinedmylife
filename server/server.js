@@ -48,7 +48,7 @@ app.use(session({
 
 app.get('/flights', async function (req, res) {
     const { from, to, departDate, returnDate, adults, children } = req.query;
-    res.send((await formatFlight(await fetchFlights(from, to, departDate, returnDate, adults, children))));
+    res.send((formatFlight(await fetchFlights(from, to, departDate, returnDate, adults, children))));
 });
 
 app.get('/accomodations', async function (req, res) {

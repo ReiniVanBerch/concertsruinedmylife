@@ -10,7 +10,7 @@ async function fetchFlights(Depa, Dest, Depadate, ReturnDate,passengers, returns
 
     const bearerToken = await tokenManager.getValidAccessToken();
     return new Promise((resolve, reject) => {
-        const url = `${api}?originLocationCode=${Depa}&destinationLocationCode=${Dest}&departureDate=${Depadate}&returnDate=${ReturnDate}&adults=${passengers}&max=${returns}`;
+        const url = `${api}?originLocationCode=${Depa}&destinationLocationCode=${Dest}&departureDate=${Depadate}&returnDate=${ReturnDate}&adults=${passengers}&max=25`;
         const flights = [];
         const options = {
             headers: {
