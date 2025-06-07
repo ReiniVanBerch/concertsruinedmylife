@@ -31,6 +31,8 @@ const allEvents = require('./internal/database/events/allEvents.js');
 const putEvent = require('./internal/database/events/putEvent.js');
 const getEvent = require('./internal/database/events/getEvent.js');
 const deleteEvent = require('./internal/database/events/deleteEvent.js');
+const fetchHotels = require("./internal/api/fetchHotels");
+const formatHotels = require("./internal/api/formatHotels");
 
 // --- Middleware Setup ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); // Use the loaded document
@@ -51,8 +53,9 @@ app.get('/flights', async function (req, res) {
     res.send((formatFlight(await fetchFlights(from, to, departDate, returnDate, adults, children))));
 });
 
-app.get('/accomodations', async function (req, res) {
-    res.send(formatMovies(await fetchMovies()));
+app.get('/accomodations', async function (req, res) {7
+    const { cityCode } = req.query;
+    res.send(formatHotels(await fetchHotels(cityCode)));
 });
 app.get('/airport/:airport', async function (req, res) {
     res.send(await fetchAirport(req.params.airport));
