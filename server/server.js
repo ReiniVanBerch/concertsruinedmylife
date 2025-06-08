@@ -33,6 +33,7 @@ const getEvent = require('./internal/database/events/getEvent.js');
 const deleteEvent = require('./internal/database/events/deleteEvent.js');
 const fetchHotels = require("./internal/api/fetchHotels");
 const formatHotels = require("./internal/api/formatHotels");
+const fetchGeoCode=require("./internal/api/fetchGeoCode.js");
 
 // --- Middleware Setup ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); // Use the loaded document
@@ -57,6 +58,12 @@ app.get('/accomodations', async function (req, res) {7
     const { cityCode } = req.query;
     res.send(formatHotels(await fetchHotels(cityCode)));
 });
+
+app.get('/geoloc', async function (req, res) {7
+    const { POI } = req.query;
+    res.send(await fetchGeoCode(POI));
+});
+
 app.get('/airport/:airport', async function (req, res) {
     res.send(await fetchAirport(req.params.airport));
 })
