@@ -1,6 +1,6 @@
 const db = require('../databaseConnector.js');
 
-async function deleteEvent(req, res){
+async function deleteCostpoint(req, res){
 
     if (!req.session.username) {
         return res.status(401).send('Not logged in');
@@ -8,10 +8,9 @@ async function deleteEvent(req, res){
     else{
 
         const eventId = parseInt(req.params.event, 10);
-        const deleteEvent = db.prepare('DELETE FROM events WHERE username = ? AND id = ?');
-        const deleteCostpoints = db.prepare('DELETE FROM costpoint WHERE username = ? AND eventID = ?');
-        const result = deleteEvent.run(req.session.username, eventId);
-        deleteCostpoints.run(req.session.username, eventId);
+        const deleteCostpoint = db.prepare('DELETE FROM costpoints WHERE username = ? AND id = ?');
+        const result = deleteCostpoint.run(req.session.username, eventId);
+
 
         if (result.changes > 0) {
             console.log("success");

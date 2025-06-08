@@ -15,13 +15,13 @@ db.prepare(`
 
 
 db.prepare(`
-    CREATE TABLE IF NOT EXISTS costpoints (
-        id INTEGER PRIMARY KEY,
-        username TEXT NOT NULL,
-        eventID INTEGER NOT NULL,
-        text TEXT,
-        cost REAL
-    );
+  CREATE TABLE IF NOT EXISTS costpoints (
+      id INTEGER PRIMARY KEY,
+      username TEXT NOT NULL,
+      eventID INTEGER NOT NULL,
+      text TEXT,
+      cost REAL
+  );
 `).run();
 
 module.exports = db;
