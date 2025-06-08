@@ -9,7 +9,12 @@ const app = express();
 // --- Swagger Integration ---
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs'); // Use the yamljs library
-const swaggerDocument = YAML.load('./server/swagger.yaml'); // Load the external yaml file
+let swaggerDocument = YAML;
+try {
+    swaggerDocument = YAML.load('./swagger.yaml');
+} catch (e) {
+    swaggerDocument = YAML.load('./server/swagger.yaml');
+}
 
 const { emitWarning } = require('process');
 
@@ -41,6 +46,7 @@ const deleteEvent = require('./internal/database/events/deleteEvent.js');
 const fetchHotels = require("./internal/api/fetchHotels");
 const formatHotels = require("./internal/api/formatHotels");
 const fetchGeoCode=require("./internal/api/fetchGeoCode.js");
+const fetchAirportGeo =require("./internal/api/fetchAirportGeo.js");
 
 // --- Middleware Setup ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); // Use the loaded document
@@ -70,6 +76,13 @@ app.get('/geoloc', async function (req, res) {7
     const { POI } = req.query;
     res.send(await fetchGeoCode(POI));
 });
+
+app.get('/geolocairport', async function (req, res) {7
+    const { POI } = req.query;
+    res.send(await fetchAirportGeo(POI));
+});
+
+
 
 app.get('/airport/:airport', async function (req, res) {
     res.send(await fetchAirport(req.params.airport));

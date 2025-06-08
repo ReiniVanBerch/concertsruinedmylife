@@ -22,4 +22,4 @@ async function deleteCostpoint(req, res){
     }
 }
 
-module.exports = deleteEvent;
+module.exports = deleteCostpoint;
