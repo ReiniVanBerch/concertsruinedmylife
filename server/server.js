@@ -48,6 +48,10 @@ const formatHotels = require("./internal/api/formatHotels");
 const fetchGeoCode=require("./internal/api/fetchGeoCode.js");
 const fetchAirportGeo =require("./internal/api/fetchAirportGeo.js");
 const fetchHotelsGeo =require("./internal/api/fetchHotelsGeo.js");
+const fetchHotelDetails = require("./internal/api/fetchHotelOffers.js");
+const fetchHotelOffers = require("./internal/api/fetchHotelOffers.js");
+const { formatHotelOffers } = require("./internal/api/hotelOfferFormatter.js");
+
 
 // --- Middleware Setup ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); // Use the loaded document
@@ -70,7 +74,7 @@ app.get('/flights', async function (req, res) {
 
 app.get('/accomodations', async function (req, res) {7
     const { cityCode } = req.query;
-    res.send(formatHotels(await fetchHotels(cityCode)));
+    res.send((await fetchHotels(cityCode)));
 });
 
 app.get('/accomodationsgeo', async function (req, res) {7
@@ -78,6 +82,26 @@ app.get('/accomodationsgeo', async function (req, res) {7
     res.send((await fetchHotelsGeo(POI)));
 });
 
+app.get('/accomodationsdetails', async function (req, res) {7
+    const { hotelid, checkin, checkout,adults,rooms } = req.query;
+    res.send((await fetchHotelDetails(hotelid, checkin, checkout,adults,rooms)));
+});
+
+app.get('/accomodationsoffers', async (req, res) => {
+    const { hotelIds, checkin, checkout, adults, rooms } = req.query;
+
+    if (!hotelIds) {
+        return res.status(400).send({ message: "Hotel IDs are required." });
+    }
+
+    // The hotelIds will be a comma-separated string, so we split it into an array
+    const hotelIdArray = hotelIds.split(',');
+
+    const rawData = await fetchHotelOffers(hotelIdArray, checkin, checkout, adults, rooms);
+    const formattedData = formatHotelOffers(rawData);
+
+    res.send(formattedData);
+});
 
 app.get('/geoloc', async function (req, res) {7
     const { POI } = req.query;
