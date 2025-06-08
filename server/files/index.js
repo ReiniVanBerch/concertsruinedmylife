@@ -57,7 +57,8 @@ async function fetchAndDisplayEventDetails(eventID) {
             detailElement.className = 'event-detail-item';
             detailElement.innerHTML = `<h3>${eventDetail.name || "N/A"}</h3><p><strong>Date:</strong> ${eventDetail.localDate || "N/A"} at ${eventDetail.localTime || ''}</p><p><strong>Venue:</strong> ${eventDetail.venue || "N/A"}</p><p><strong>Address:</strong> ${eventDetail.address || "N/A"}</p>`;
             eventsContainer.appendChild(detailElement);
-            document.getElementById('destinationLocation').value = eventDetail.venue || '';
+            // This is the correct place to use the location name directly
+            document.getElementById('destinationLocation').value = eventDetail.venue || eventDetail.name;
             document.getElementById('departureDate').value = eventDetail.localDate || '';
         } else {
             eventsContainer.innerHTML += '<p>Event details could not be loaded.</p>';
@@ -70,9 +71,44 @@ async function fetchAndDisplayEventDetails(eventID) {
 }
 
 
-// --- FLIGHT & HOTEL SEARCH FUNCTIONS ---
+// --- GEOCODING, FLIGHT, & HOTEL SEARCH FUNCTIONS ---
+
+/**
+ * NEW: Takes a location name (e.g., "London"), gets its coordinates, and finds the nearest airport IATA code.
+ * @param {string} locationName - The name of the city or point of interest.
+ * @returns {Promise<string|null>} A promise that resolves to the airport IATA code (e.g., "LCY") or null.
+ */
+async function getIataCode(locationName) {
+    try {
+        // Step 1: Get coordinates for the location name
+        const geoUrl = `/geoloc?POI=${encodeURIComponent(locationName)}`;
+        let geoRes = await fetch(geoUrl);
+        if (!geoRes.ok) throw new Error('Failed to get geocode');
+        let geoData = await geoRes.json();
+
+        // Extract coordinates from the first result
+        const coordinates = geoData.features[0].geometry.coordinates;
+        const point = `${coordinates[0]},${coordinates[1]}`; // lon,lat format
+
+        // Step 2: Use coordinates to find the nearest airport
+        const airportUrl = `/geolocairport?POI=${encodeURIComponent(point)}`;
+        let airportRes = await fetch(airportUrl);
+        if (!airportRes.ok) throw new Error('Failed to get airport');
+        let airportData = await airportRes.json();
+
+        // Extract the IATA code from the first airport result
+        const iataCode = airportData.features[0].properties.airport.iata;
+        return iataCode;
+
+    } catch (error) {
+        console.error(`Could not get IATA code for "${locationName}":`, error);
+        return null; // Return null if any step fails
+    }
+}
+
 
 async function getFlights(searchParams) {
+    // ... (This function remains unchanged)
     const transportsContainer = document.getElementById('transportsContainer');
     transportsContainer.innerHTML = '<p>Searching for flights...</p>';
     const query = new URLSearchParams(searchParams).toString();
@@ -91,6 +127,7 @@ async function getFlights(searchParams) {
 }
 
 function displayFlights(flights) {
+    // ... (This function remains unchanged)
     const transportsContainer = document.getElementById('transportsContainer');
     transportsContainer.innerHTML = '';
     if (!flights || flights.length === 0 || (flights[0] && flights[0].name === "No flights found for your search.")) {
@@ -109,9 +146,34 @@ function displayFlights(flights) {
 }
 
 async function getHotels(cityCode) {
+    // ... (This function remains unchanged)
     const accommodationsContainer = document.getElementById('accomodationsContainer');
     accommodationsContainer.innerHTML = '<p>Searching for hotels...</p>';
-    const apiUrl = `/accomodations?cityCode=${encodeURIComponent(cityCode)}`;
+    const destinationLocationText = document.getElementById('destinationLocation').value;
+
+    // Validate text inputs first
+    if ( !destinationLocationText) {
+        alert('Please fill in departure and destination locations.');
+        return;
+    }
+
+    console.log("Geocoding departure and destination...");
+
+    // Convert both location names to IATA codes in parallel
+    const [ toIata] = await Promise.all([
+
+        getIataCode(destinationLocationText)
+    ]);
+
+    if (!toIata) {
+        alert('Could not find airport codes for the locations provided. Please be more specific.');
+        return;
+    }
+
+
+
+
+    const apiUrl = `/accomodations?cityCode=${encodeURIComponent(toIata)}`;
     try {
         const response = await fetch(apiUrl);
         if (!response.ok) {
@@ -127,7 +189,9 @@ async function getHotels(cityCode) {
 }
 
 function displayHotels(hotels) {
+    // ... (This function remains unchanged)
     const accommodationsContainer = document.getElementById('accomodationsContainer');
+
     accommodationsContainer.innerHTML = '';
     if (!hotels || hotels.length === 0 || (hotels[0] && hotels[0].name.includes("No hotels"))) {
         accommodationsContainer.innerHTML = '<p>No hotels found for this city.</p>';
@@ -145,34 +209,54 @@ function displayHotels(hotels) {
 }
 
 /**
- * MODIFIED: Reads data from the form and initiates BOTH flight and hotel searches
- * using the user's specified parameter names.
+ * MODIFIED: Reads text locations, converts them to IATA codes, then searches.
  */
 async function searchForTravel() {
-    const departureLocation = document.getElementById('departureLocation').value;
-    const destinationLocation = document.getElementById('destinationLocation').value;
+    const departureLocationText = document.getElementById('departureLocation').value;
+    const destinationLocationText = document.getElementById('destinationLocation').value;
+
+    // Validate text inputs first
+    if (!departureLocationText || !destinationLocationText) {
+        alert('Please fill in departure and destination locations.');
+        return;
+    }
+
+    console.log("Geocoding departure and destination...");
+
+    // Convert both location names to IATA codes in parallel
+    const [fromIata, toIata] = await Promise.all([
+        getIataCode(departureLocationText),
+        getIataCode(destinationLocationText)
+    ]);
+
+    if (!fromIata || !toIata) {
+        alert('Could not find airport codes for the locations provided. Please be more specific.');
+        return;
+    }
+
+    console.log(`Found IATA codes: From ${fromIata}, To ${toIata}`);
+
+    // Now proceed with the search using the retrieved IATA codes
     const departureDate = document.getElementById('departureDate').value;
     const returnDate = document.getElementById('returnDate').value;
     const numberTravellers = document.getElementById('numberTravellers').value;
 
-    if (!departureLocation || !destinationLocation || !departureDate || !returnDate) {
+    if (!departureDate || !returnDate) {
         alert('Please fill in all required travel fields.');
         return;
     }
 
-    // --- Flight Search Logic with USER-SPECIFIED parameters ---
     const flightSearchParams = {
-        from: departureLocation,
-        to: destinationLocation,
-        departDate: departureDate, // Using your parameter name
-        returnDate: returnDate,   // Using your parameter name
-        adults: numberTravellers, // Using your parameter name
-        children: 0               // Using your parameter name
+        from: fromIata, // Use the IATA code
+        to: toIata,     // Use the IATA code
+        departDate: departureDate,
+        returnDate: returnDate,
+        adults: numberTravellers,
+        children: 0
     };
     getFlights(flightSearchParams).then(displayFlights);
 
-    // --- Hotel Search Logic (Unaffected) ---
-    const cityCodeForHotels = destinationLocation;
+    const cityCodeForHotels = toIata; // The destination IATA is the city code
     getHotels(cityCodeForHotels).then(displayHotels);
 }
 
@@ -181,9 +265,9 @@ async function searchForTravel() {
 document.addEventListener('DOMContentLoaded', () => {
     // Event Search Listener
     const searchButton = document.getElementById('searchButton');
-    const keywordInput = document.getElementById('keywordInput');
+    //const keywordInput = document.getElementById('keywordInput');
     if (searchButton) { searchButton.addEventListener('click', () => displayEvents(keywordInput.value)); }
-    if (keywordInput) { keywordInput.addEventListener('keypress', e => { if (e.key === 'Enter') displayEvents(keywordInput.value); }); }
+    //if (keywordInput) { keywordInput.addEventListener('keypress', e => { if (e.key === 'Enter') displayEvents(keywordInput.value); }); }
 
     // Travel Search Listener
     const travelSearchButton = document.getElementById('searchFlightsButton');
