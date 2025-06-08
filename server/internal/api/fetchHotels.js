@@ -6,7 +6,7 @@ var api = "https://test.api.amadeus.com/v1/reference-data/locations/hotels/by-ci
 //var keyword = ["Billie Eilish"];
 
 async function fetchHotels(cityCode) {
-    const radius = 40;
+    const radius = 3;
     const radiusUnit = "KM";
     const hotelSource = "ALL";
     const bearerToken = await tokenManager.getValidAccessToken();
