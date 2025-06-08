@@ -1,6 +1,5 @@
-const db = require('./databaseConnector.js');
+const db = require('../databaseConnector.js');
 const bcrypt = require('bcrypt');
-
 
 async function login(req, res){
     let { username, password } = req.body;

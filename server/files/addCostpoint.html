@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form id="costpointForm">
+
+        <input type="hidden" name="eventID" value="">
+
+        <div>
+            <label for="text">Text</label>
+            <input type="text"
+                id="text"
+                name="text"
+                required>
+        </div>
+        
+        <div>
+            <label for="cost">Cost</label>
+            <input type="number"
+                step="0.01"
+                id="cost"
+                name="cost"
+                >
+        </div>
+        
+
+
+        <button type="submit" id="submit">Create Costpoint</button>
+    </form>
+    <a href="/profile.html"> Back to all Events</a>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventID = urlParams.get("event");
+        document.querySelector('input[name="eventID"]').value = eventID;
+        
+        document.getElementById('costpointForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            fetch('/profile/costpoint', {
+                method: 'PUT',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+            let textfield = document.getElementById("text");
+            textfield.value = "";
+
+            let costfield = document.getElementById("cost");
+            costfield.value = "";
+        });
+
+
+        console.log("I am in");
+
+    </script>
+</body>
+</html>

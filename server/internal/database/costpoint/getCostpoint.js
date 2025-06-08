@@ -15,7 +15,7 @@ async function getEvent(req, res){
             res.status(200).send(costpoints);
         }
         else{
-            res.status(200).send({success:true, message: "No Events found!"});
+            res.status(200).send({success:true, message: "No Costpoints found!"});
         }
     }
 }

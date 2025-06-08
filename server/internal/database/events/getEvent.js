@@ -8,7 +8,7 @@ async function getEvent(req, res){
         return res.status(401).send('Not logged in');
     }
     else{
-        const getEvents = db.prepare('SELECT * FROM events WHERE username = ? AND eventID = ?');
+        const getEvents = db.prepare('SELECT * FROM events WHERE username = ? AND id = ?');
         const events = await getEvents.get(username, id);
 
         if (events) {

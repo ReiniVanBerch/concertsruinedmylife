@@ -9,8 +9,8 @@ async function deleteEvent(req, res){
 
         const eventId = parseInt(req.params.event, 10);
         const deleteEvent = db.prepare('DELETE FROM events WHERE username = ? AND id = ?');
-        const deleteCostpoints = db.prepare('DELETE FROM costpoint WHERE username = ? AND eventID = ?');
         const result = deleteEvent.run(req.session.username, eventId);
+        const deleteCostpoints = db.prepare('DELETE FROM costpoints WHERE username = ? AND eventID = ?');
         deleteCostpoints.run(req.session.username, eventId);
 
         if (result.changes > 0) {

@@ -5,11 +5,14 @@ async function allEvents(req, res){
     const getCostpoints  = db.prepare('SELECT * FROM costpoints WHERE username = ?');
     const costpoints = await getCostpoints.all(req.session.username);
 
-    if (events) {
+
+    if (costpoints.length > 0) {
         res.status(200).send(costpoints);
     }
     else{
-        res.status(200).send({success:true, message: "No Costpoints found!"});
+        console.log("empty");
+
+        res.status(204).send({message: "No Costpoints found!"});
     }
 }
 

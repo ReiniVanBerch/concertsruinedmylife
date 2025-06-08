@@ -1,4 +1,8 @@
+require('dotenv').config();
+
 function ensureAuthenticated(req, res, next) {
+
+
   if (req.session.username) {
     return next(req, res); // user is logged in, continue to route
   }else{

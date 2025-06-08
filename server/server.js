@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config();
 
 const bcrypt = require('bcrypt');
 const express = require('express');
@@ -28,9 +28,11 @@ const formatEventDetails = require('./internal/api/formatEventDetails.js');
 const formatFlight = require('./internal/api/formatFlight.js');
 const fetchAirport = require('./internal/api/fetchAirports.js');
 
-const login = require('./internal/database/login.js');
-const register = require('./internal/database/register.js');
-const ensureAuthenticated = require('./internal/database/ensureAuthenticated.js');
+
+//stuuuuuuuuuuuff
+const login = require('./internal/database/user/login.js');
+const register = require('./internal/database/user/register.js');
+const ensureAuthenticated = require('./internal/database/user/ensureAuthenticated.js');
 
 const eventCostpoints = require('./internal/database/costpoint/allCostpoints.js');
 const allCostpoints = require('./internal/database/costpoint/allCostpoints.js');
@@ -113,11 +115,10 @@ app.get('/geolocairport', async function (req, res) {7
     res.send(await fetchAirportGeo(POI));
 });
 
-
-
 app.get('/airport/:airport', async function (req, res) {
     res.send(await fetchAirport(req.params.airport));
 })
+
 
 
 app.get('/event/', async function (req, res) {
@@ -138,7 +139,15 @@ app.get('/eventdetails/:eventID', async function (req, res) {
     res.send(formatEventDetails(await eventDetails(req.params.eventID)));
 })
 
-//UserThingos
+
+
+/* User
+U   U   SSSS  EEEEE  RRRR
+U   U  S      E      R   R
+U   U   SSS   EEEE   RRRR
+U   U      S  E      R   R
+ UUU   SSSS   EEEEE  R   R
+*/
 //Login and Register
 app.post('/login', async (req, res) => {
     login(req, res);
@@ -161,9 +170,48 @@ app.get('/auth', (req, res) => {
     }
 });
 
-//See if loggedIn, and if username
-app.get('/profile', (req, res) => { ensureAuthenticated(req, res, () => { res.redirect(302, '/profile.html'); }); });
+//delete a specified user 
+app.delete("/users/:user", (req, res) => {
 
+});
+
+
+app.get('/users', (req, res) => {
+
+
+});
+
+
+//Admin login!
+//The link is the first layer of security, the second is the code. 
+app.get('/admin/3f9a7c8e2d6b1f4a9e0d7c3b5a8f2e6d1c4b9a0f7d3e5c8b2a1f6d9e7c0b4a3/:admin', (req, res) => {
+    if(process.env.ADMIN_KEY == req.params.admin){
+        req.session.admin_key
+        res.status(200).send(
+            "<p>You now have admin priveledges for this session!<br>"+
+            "To logout go to <a href='/logout'>this link</a> <br>" +
+            "Else you might go <a href ='/admin.html'>here</a></p>");
+    } else {
+        res.status(401).send("You shall feal this sword, foul white whale !!!");
+    }
+});
+
+
+//See if loggedIn, and if username
+app.get('/profile', (req, res) => {
+    ensureAuthenticated(req, res, () => {
+        res.redirect(302, '/profile.html');
+    });
+});
+
+
+/* Event
+EEEEE  V   V  EEEEE  N   N  TTTTT
+E      V   V  E      NN  N    T
+EEEE    V V   EEEE   N N N    T
+E       V V   E      N  NN    T
+EEEEE    V    EEEEE  N   N    T
+*/
 
 //Get Events assigned to User
 app.get('/profile/events', async function (req, res) { ensureAuthenticated(req, res, allEvents); })
@@ -178,20 +226,30 @@ app.put('/profile/events', async function (req, res) { ensureAuthenticated(req, 
 app.delete('/profile/events/:event', async function (req, res) { ensureAuthenticated(req, res, deleteEvent); })
 
 
+
+
+/* Costpoints
+ CCC    OOO    SSSS  TTTTT  PPPP    OOO   IIIII  N   N TTTTT   SSSS
+C   C  O   O  S        T    P   P  O   O    I    NN  N   T    S
+C      O   O   SSS     T    PPPP   O   O    I    N N N   T     SSS
+C   C  O   O      S    T    P      O   O    I    N  NN   T        S
+ CCC    OOO   SSSS     T    P       OOO   IIIII  N   N   T    SSSS
+*/
+
 //Get all costpoints of a user
-app.get('/profile/events/costpoints', async function (req, res) { ensureAuthenticated(req, res, allCostpoints); })
+app.get('/profile/costpoints', async function (req, res) { ensureAuthenticated(req, res, allCostpoints); })
 
 //Get all costpoints belonging to an event 
 app.get('/profile/events/:event/costpoints', async function (req, res) { ensureAuthenticated(req, res, eventCostpoints); })
 
 //Get a specific sotpoint of a spcific event
-app.get('/profile/events/:costpoint', async function (req, res) { ensureAuthenticated(req, res, getCostpoint); })
+app.get('/profile/:costpoint', async function (req, res) { ensureAuthenticated(req, res, getCostpoint); })
 
 //Add a costpoint to user
-app.put('/profile/events/:event/:costpoint', async function (req, res) { ensureAuthenticated(req, res, putCostpoint); })
+app.put('/profile/costpoint', async function (req, res) { ensureAuthenticated(req, res, putCostpoint); })
 
 //Remove an event to user
-app.delete('/profile/events/:costpoint', async function (req, res) { ensureAuthenticated(req, res, deleteCostpoint); })
+app.delete('/profile/costpoint/:costpoint', async function (req, res) { ensureAuthenticated(req, res, deleteCostpoint); })
 
 
 // --- Server Start ---

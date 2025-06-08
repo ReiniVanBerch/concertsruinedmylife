@@ -7,17 +7,17 @@ async function deleteCostpoint(req, res){
     }
     else{
 
-        const eventId = parseInt(req.params.event, 10);
+        const costpointID = parseInt(req.params.costpoint, 10);
         const deleteCostpoint = db.prepare('DELETE FROM costpoints WHERE username = ? AND id = ?');
-        const result = deleteCostpoint.run(req.session.username, eventId);
+        const result = deleteCostpoint.run(req.session.username, costpointID);
 
 
         if (result.changes > 0) {
             console.log("success");
-            res.status(200).send({ success: true, message: "Event deleted successfully." });
+            res.status(200).send({ success: true, message: "Costpoint deleted successfully." });
         } else {
             console.log("failure");
-            res.status(404).send({ success: false, message: "Event not found or unauthorized." });
+            res.status(404).send({ success: false, message: "Costpoint not found or unauthorized." });
         }
     }
 }
