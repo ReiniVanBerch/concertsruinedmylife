@@ -8,7 +8,7 @@ async function login(req, res){
     password = typeof password === 'string' ? password : '';
 
     try{
-        const getPassword = db.prepare('SELECT password FROM user WHERE username = ?');
+        const getPassword = db.prepare('SELECT password FROM users WHERE username = ?');
         const user = await getPassword.get(username);
 
 

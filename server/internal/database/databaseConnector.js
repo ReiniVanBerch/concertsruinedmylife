@@ -1,7 +1,11 @@
 const Database = require('better-sqlite3');
 const db = new Database('database.sqlite');
 
-db.prepare('CREATE TABLE IF NOT EXISTS user (username TEXT PRIMARY KEY, password TEXT)').run();
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS users (
+  username TEXT PRIMARY KEY, 
+  password TEXT);
+`).run();
 
 
 
