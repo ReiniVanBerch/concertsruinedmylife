@@ -34,6 +34,17 @@
     <a href="/profile.html"> Back to all Events</a>
 
     <script>
+
+        window.onload = async function () {
+
+        let loginCheck = new XMLHttpRequest();
+        loginCheck.open("GET", "/auth");
+        loginCheck.send();
+
+        loginCheck.onload = async function(){
+
+            if(loginCheck.status === 200){
+
         const urlParams = new URLSearchParams(window.location.search);
         const eventID = urlParams.get("event");
         document.querySelector('input[name="eventID"]').value = eventID;
@@ -55,9 +66,13 @@
             let costfield = document.getElementById("cost");
             costfield.value = "";
         });
-
+            } else{
+                window.location.href = '/auth.html';
+            }
+        }}
 
         console.log("I am in");
+
 
     </script>
 </body>
