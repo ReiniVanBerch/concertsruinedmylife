@@ -1,131 +1,260 @@
-openapi: 3.0.0
+openapi: 3.0.1
 info:
-  title: Concerts ruined my life APIs
-  version: 0.1.0
-  description: API for managing travel events, flights, and user profiles.
+  title: Concerts Ruined My Life (CRML) API
+  description: This is the API documentation for the CRML application, which allows users to search for events, flights, and hotels, and manage their trip details.
+  version: 1.0.0
 servers:
-  - url: 'http://localhost:3000'
-    description: Development server
-components:
-  securitySchemes:
-    cookieAuth:
-      type: apiKey
-      in: cookie
-      name: connect.sid # Default name for express-session cookie
+  - url: http://localhost:3000
+    description: Local development server
 
-# Global security definition (applies to all paths that don't override it)
-security:
-  - cookieAuth: []
+tags:
+  - name: Travel APIs
+    description: Endpoints for searching flights, hotels, and geolocations.
+  - name: Event APIs
+    description: Endpoints for searching Ticketmaster events.
+  - name: User Management
+    description: Endpoints for user registration, login, logout, and authentication.
+  - name: User Profile - Events
+    description: Endpoints for managing events saved to a user's profile.
+  - name: User Profile - Costpoints
+    description: Endpoints for managing costs associated with a user's events.
+  - name: Admin
+    description: Administrative endpoints.
 
 paths:
+  # Travel API Endpoints
   /flights:
     get:
-      summary: Retrieve flight offers
-      description: Fetches flight information based on origin, destination, and dates.
+      tags:
+        - Travel APIs
+      summary: Search for flight offers
+      description: Retrieves a list of flight offers based on departure and destination IATA codes, dates, and number of passengers.
       parameters:
-        - in: query
-          name: from
-          schema:
-            type: string
+        - name: from
+          in: query
           required: true
           description: IATA code for the departure airport (e.g., VIE).
-        - in: query
-          name: to
           schema:
             type: string
+        - name: to
+          in: query
           required: true
           description: IATA code for the destination airport (e.g., LHR).
-        - in: query
-          name: departDate
           schema:
             type: string
-            format: date
+        - name: departDate
+          in: query
           required: true
           description: Departure date in YYYY-MM-DD format.
-        - in: query
-          name: returnDate
           schema:
             type: string
             format: date
+        - name: returnDate
+          in: query
           required: true
           description: Return date in YYYY-MM-DD format.
-        - in: query
-          name: adults
           schema:
-            type: integer
+            type: string
+            format: date
+        - name: adults
+          in: query
           required: true
           description: Number of adult passengers.
-        - in: query
-          name: children
           schema:
             type: integer
-          required: true
+        - name: children
+          in: query
+          required: false
           description: Number of child passengers.
+          schema:
+            type: integer
       responses:
         '200':
-          description: A JSON array of formatted flight data.
+          description: A list of formatted flight offers.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
+        '400':
+          description: Bad request, missing parameters.
+        '500':
+          description: Internal server error.
 
   /accomodations:
     get:
-      summary: Retrieve accomodations (Not Implemented)
-      description: Placeholder for fetching accomodation data.
-      responses:
-        '200':
-          description: Formatted data.
-
-  /airport/{airport}:
-    get:
-      summary: Retrieve airport information by IATA code
-      description: Fetches details for a specific airport.
+      tags:
+        - Travel APIs
+      summary: Search for hotels by city code
+      description: Retrieves a list of hotels available in a specific city.
       parameters:
-        - in: path
-          name: airport
+        - name: cityCode
+          in: query
+          required: true
+          description: IATA code for the city (e.g., VIE).
           schema:
             type: string
-          required: true
-          description: IATA code of the airport to fetch (e.g., VIE).
       responses:
         '200':
-          description: Airport details.
-  
+          description: A list of hotels.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hotel'
+        '400':
+          description: Bad request, missing city code.
+
+  /accomodationsgeo:
+    get:
+      tags:
+        - Travel APIs
+      summary: Search for hotels by geographic coordinates
+      description: Retrieves a list of hotels near a specific latitude and longitude.
+      parameters:
+        - name: POI
+          in: query
+          required: true
+          description: A string containing longitude and latitude, formatted as "lon,lat".
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A list of hotels near the specified coordinates.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hotel'
+
+  /accomodationsoffers:
+    get:
+      tags:
+        - Travel APIs
+      summary: Get specific offers for a list of hotels
+      description: Fetches detailed offers, including price, for a comma-separated list of hotel IDs.
+      parameters:
+        - name: hotelIds
+          in: query
+          required: true
+          description: A comma-separated string of hotel IDs.
+          schema:
+            type: string
+        - name: checkin
+          in: query
+          required: true
+          description: Check-in date in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+        - name: checkout
+          in: query
+          required: true
+          description: Check-out date in YYYY-MM-DD format.
+          schema:
+            type: string
+            format: date
+        - name: adults
+          in: query
+          required: true
+          description: Number of adults.
+          schema:
+            type: integer
+        - name: rooms
+          in: query
+          required: false
+          description: Number of rooms required.
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A list of detailed hotel offers.
+        '400':
+          description: Bad request, missing parameters.
+
+  /geoloc:
+    get:
+      tags:
+        - Travel APIs
+      summary: Get geocode for a Point of Interest (POI)
+      description: Converts a location name (e.g., "O2 London") into geographic coordinates.
+      parameters:
+        - name: POI
+          in: query
+          required: true
+          description: The name of the location to geocode.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Geoapify API response with coordinates.
+
+  /geolocairport:
+    get:
+      tags:
+        - Travel APIs
+      summary: Find nearest airport by coordinates
+      description: Finds the nearest international airport to a given set of coordinates and returns its details, including IATA code.
+      parameters:
+        - name: POI
+          in: query
+          required: true
+          description: A string containing longitude and latitude, formatted as "lon,lat".
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Geoapify API response listing nearby airports.
+
+  # Event API Endpoints
   /event:
     get:
-      summary: Search for events by keyword
-      description: Fetches a list of events from an external API based on a keyword.
+      tags:
+        - Event APIs
+      summary: Search for events
+      description: Searches for events using a keyword (e.g., artist, city, or venue).
       parameters:
-        - in: query
-          name: keyword
+        - name: keyword
+          in: query
+          required: true
+          description: The search term for the event.
           schema:
             type: string
-          required: true
-          description: Keyword to search for events (e.g., "concert").
       responses:
         '200':
-          description: A list of formatted events.
+          description: A list of formatted event objects.
         '500':
-          description: Server error.
+          description: Internal server error.
 
   /eventdetails/{eventID}:
     get:
+      tags:
+        - Event APIs
       summary: Get details for a specific event
-      description: Fetches detailed information for a single event by its ID.
+      description: Retrieves detailed information for a single event using its unique ID.
       parameters:
-        - in: path
-          name: eventID
-          schema:
-            type: string
+        - name: eventID
+          in: path
           required: true
           description: The unique ID of the event.
+          schema:
+            type: string
       responses:
         '200':
-          description: Detailed information about the event.
+          description: A detailed, formatted event object.
+        '404':
+          description: Event not found.
 
+  # User Management Endpoints
   /login:
     post:
-      summary: Logs a user in
-      description: Authenticates a user and starts a session.
-      # This route does not require the global security cookie
-      security: []
+      tags:
+        - User Management
+      summary: User login
+      description: Authenticates a user based on username and password.
       requestBody:
         required: true
         content:
@@ -141,21 +270,14 @@ paths:
         '200':
           description: Login successful.
         '401':
-          description: Unauthorized, invalid credentials.
-  
-  /logout:
-    get:
-      summary: Logs the current user out
-      description: Destroys the current user session.
-      responses:
-        '200':
-          description: Successfully logged out.
+          description: Invalid credentials.
 
   /register:
     post:
-      summary: Registers a new user
+      tags:
+        - User Management
+      summary: User registration
       description: Creates a new user account.
-      security: []
       requestBody:
         required: true
         content:
@@ -167,104 +289,89 @@ paths:
                   type: string
                 password:
                   type: string
+                email:
+                  type: string
+                  format: email
       responses:
         '201':
           description: User created successfully.
         '409':
-          description: Conflict, username already exists.
+          description: Username or email already exists.
+
+  /logout:
+    get:
+      tags:
+        - User Management
+      summary: User logout
+      description: Destroys the user's session.
+      responses:
+        '200':
+          description: Logged out successfully.
 
   /auth:
     get:
-      summary: Checks user authentication status
-      description: Verifies if a user session is active.
+      tags:
+        - User Management
+      summary: Check authentication status
+      description: Verifies if the user is currently logged in.
       responses:
         '200':
           description: User is authenticated.
         '402':
           description: User is not authenticated.
 
-  /profile:
-    get:
-      summary: Redirects to user profile page
-      description: If authenticated, redirects to the profile HTML page. Requires session cookie.
-      responses:
-        '302':
-          description: Redirects to profile page.
-        '401':
-          description: Unauthorized.
-
+  # Database-related endpoints would go here (Events, Costpoints)
+  # Placeholder for a complete specification.
   /profile/events:
     get:
-      summary: Get all events for the logged-in user
-      description: Retrieves a list of all events saved by the authenticated user.
+      tags:
+        - User Profile - Events
+      summary: Get all events for a user
+      description: (Protected) Retrieves all events saved to the currently logged-in user's profile.
       responses:
         '200':
-          description: A list of the user's events.
+          description: A list of saved events.
         '401':
           description: Unauthorized.
     put:
-      summary: Add an event to the user's profile
-      description: Saves a new event to the authenticated user's profile.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              description: The event object to add.
+      tags:
+        - User Profile - Events
+      summary: Add an event to a user's profile
+      description: (Protected) Saves a new event to the user's profile.
       responses:
         '200':
           description: Event added successfully.
         '401':
           description: Unauthorized.
 
-  /profile/events/{event}:
-    get:
-      summary: Get a specific event from the user's profile
-      description: Retrieves one event by its ID from the authenticated user's profile.
-      parameters:
-        - in: path
-          name: event
-          schema:
-            type: string
-          required: true
-          description: The ID of the event to retrieve.
-      responses:
-        '200':
-          description: The requested event object.
-        '401':
-          description: Unauthorized.
-        '404':
-          description: Event not found.
-    delete:
-      summary: Delete a specific event from the user's profile
-      description: Removes an event by its ID from the authenticated user's profile.
-      parameters:
-        - in: path
-          name: event
-          schema:
-            type: string
-          required: true
-          description: The ID of the event to delete.
-      responses:
-        '200':
-          description: Event deleted successfully.
-        '401':
-          description: Unauthorized.
-  
-  /profile/events/{event}/{costfactor}:
-    put:
-      summary: Add a cost factor to an event (Not Implemented)
-      responses:
-        '501':
-          description: Not Implemented.
-    patch:
-      summary: Modify a cost factor on an event (Not Implemented)
-      responses:
-        '501':
-          description: Not Implemented.
-    delete:
-      summary: Remove a cost factor from an event (Not Implemented)
-      responses:
-        '501':
-          description: Not Implemented.
+# Reusable Component Schemas
+components:
+  schemas:
+    Flight:
+      type: object
+      properties:
+        ID:
+          type: string
+        name:
+          type: string
+        departureTime:
+          type: string
+        arrivalTime:
+          type: string
+        departureAirport:
+          type: string
+        arrivalAirport:
+          type: string
+        price:
+          type: number
+        currency:
+          type: string
+    Hotel:
+      type: object
+      properties:
+        hotelId:
+          type: string
+        name:
+          type: string
+        distance:
+          type: string
