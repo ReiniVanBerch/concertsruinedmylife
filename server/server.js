@@ -181,6 +181,14 @@ app.get('/auth', (req, res) => {
     }
 });
 
+//See if loggedIn, and if username
+app.get('/profile', (req, res) => {
+    ensureAuthenticated(req, res, () => {
+        res.redirect(302, '/profile.html');
+    });
+});
+
+
 /* Admin
  AAA   DDDD   M   M  IIIII  N   N
 A   A  D   D  MM MM    I    NN  N
@@ -188,6 +196,15 @@ AAAAA  D   D  M M M    I    N N N
 A   A  D   D  M   M    I    N  NN
 A   A  DDDD   M   M  IIIII  N   N
 */
+
+app.get("/admin/check", (req, res) => {
+    if(req.session.admin_key === process.env.admin_key){
+        res.status(200).send("Admin");
+    } else {
+        res.status(401).send("Not allowed");
+    }
+});
+
 app.delete("/admin/:user", (req, res) => {
     ensureAdmin(req, res, deleteUser);
 });
@@ -205,12 +222,6 @@ app.get('/admin/3f9a7c8e2d6b1f4a9e0d7c3b5a8f2e6d1c4b9a0f7d3e5c8b2a1f6d9e7c0b4a3/
 });
 
 
-//See if loggedIn, and if username
-app.get('/profile', (req, res) => {
-    ensureAuthenticated(req, res, () => {
-        res.redirect(302, '/profile.html');
-    });
-});
 
 
 /* Event
