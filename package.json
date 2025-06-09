@@ -27,5 +27,8 @@
     "swagger-ui-express": "^5.0.1",
     "xml2js": "^0.6.2",
     "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "w3c-html-validator": "^1.8.3"
   }
 }
