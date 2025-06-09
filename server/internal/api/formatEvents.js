@@ -58,10 +58,20 @@ function formatEvents(inputEvents) {
                     venueData.postalCode
                 ];
                 event.address = addressParts.filter(part => part).join(', ');
+                // Add this block:
+                if (venueData.location && venueData.location.latitude && venueData.location.longitude) {
+                    event.lat = Number(venueData.location.latitude);
+                    event.lng = Number(venueData.location.longitude);
+                } else {
+                    event.lat = null;
+                    event.lng = null;
+                }
             } else {
                 event.venue = 'Venue not specified';
                 event.address = 'Address not specified';
-            }
+                event.lat = null;
+                event.lng = null;
+}
 
             events.push(event);
         });
@@ -71,7 +81,7 @@ function formatEvents(inputEvents) {
     if (events.length === 0) {
         return [{
             ID: "", name: "No Event found", localDate: "", localTime: "",
-            venue: "", artist: "", address: ""
+            venue: "", artist: "", address: "", lat: null, lng: null
         }];
     }
 

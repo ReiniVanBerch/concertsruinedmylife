@@ -1,6 +1,11 @@
 // A variable at the top to store the last search results HTML
 let lastSearchResultsHTML = '';
 
+// --- MAP GLOBALS and UTILITY ---
+
+let map = null;
+let marker = null;
+
 
 // --- EVENT SEARCH FUNCTIONS ---
 
@@ -64,6 +69,38 @@ async function fetchAndDisplayEventDetails(eventID) {
 
             document.getElementById('departureDate').value = eventDetail.localDate || '';
             document.getElementById('checkInDate').value = eventDetail.localDate || '';
+
+            // --- SHOW ON MAP ---
+            if (eventDetail.lat && eventDetail.lng) {
+                showConcertOnMap(eventDetail.lat, eventDetail.lng, eventDetail.venue || eventDetail.name);
+            } else {
+                console.warn("No latitude/longitude found for this event.");
+            }
+
+            if (eventDetail.lat && eventDetail.lng) {
+                showConcertOnMap(eventDetail.lat, eventDetail.lng, eventDetail.venue || eventDetail.name);
+                // Optionally: Remove any previous missing-location message
+                const mapError = document.getElementById('map-geocode-error');
+                if (mapError) mapError.remove();
+            } else {
+                console.warn("No latitude/longitude found for this event.");
+
+                // Show a message just below the event details or map
+                let mapDiv = document.getElementById('map');
+                if (mapDiv) {
+                    let errorDiv = document.getElementById('map-geocode-error');
+                    if (!errorDiv) {
+                        errorDiv = document.createElement('div');
+                        errorDiv.id = 'map-geocode-error';
+                        errorDiv.style.color = 'red';
+                        errorDiv.style.fontWeight = 'bold';
+                        errorDiv.style.marginTop = '8px';
+                    }
+                    errorDiv.textContent = "Sorry, there is no map location available for this event!";
+                    // Place the error below the map
+                    mapDiv.parentNode.insertBefore(errorDiv, mapDiv.nextSibling);
+                }
+            }
 
             // Get the destination IATA code and place it in the destination input.
             const destinationIata = await getIataCode(eventDetail.address);
@@ -269,8 +306,25 @@ async function searchForTravel() {
 }
 
 
-// --- EVENT LISTENERS ---
+function showConcertOnMap(lat, lng, title = "Selected Concert") {
+    console.log("SHOW marker at:", lat, lng, title);
+    if (!map) return;
+    if (marker) map.removeLayer(marker);
+    marker = L.marker([lat, lng]).addTo(map)
+        .bindPopup(title)
+        .openPopup();
+    map.setView([lat, lng], 15);
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Initialize the map when the page is loaded ---
+    map = L.map('map').setView([48.2082, 16.3738], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
     const searchButton = document.getElementById('searchButton');
     const keywordInput = document.getElementById('keywordInput');
     if (searchButton) { searchButton.addEventListener('click', () => displayEvents(keywordInput.value)); }
@@ -289,6 +343,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const containerTitle = document.querySelector('#event-details-container h1');
                 eventsContainer.innerHTML = lastSearchResultsHTML;
                 if (containerTitle) { containerTitle.style.display = 'block'; }
+                // --- Remove marker when going back ---
+                if (marker) {
+                    map.removeLayer(marker);
+                    marker = null;
+                }
             }
         });
     }

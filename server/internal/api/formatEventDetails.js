@@ -15,7 +15,7 @@ function formatEvents(inputEvents) {
         // Return the "not found" structure for invalid input
         return {
             ID: "", name: "Event not found", localDate: "", localTime: "",
-            venue: "", artist: "", address: "Invalid data provided"
+            venue: "", artist: "", address: "Invalid data provided", lat: null, lng: null
         };
     }
 
@@ -50,10 +50,20 @@ function formatEvents(inputEvents) {
                 venueData.postalCode
             ];
             event.address = addressParts.filter(part => part).join(', ');
+            
+            // --- Add coordinates ---
+            if (venueData.location && venueData.location.latitude && venueData.location.longitude) {
+                event.lat = Number(venueData.location.latitude);
+                event.lng = Number(venueData.location.longitude);
+            } else {
+                event.lat = null;
+                event.lng = null;
+            }
         } else {
-            // Provide fallback values if no venue information is present
             event.venue = 'Venue not specified';
             event.address = 'Address not specified';
+            event.lat = null;
+            event.lng = null;
         }
 
         return event;
@@ -62,7 +72,7 @@ function formatEvents(inputEvents) {
         // Handle cases where the JSON is valid but not a recognizable event
         return {
             ID: "", name: "Event not found", localDate: "", localTime: "",
-            venue: "", artist: "", address: ""
+            venue: "", artist: "", address: "", lat: null, lng: null
         };
     }
 }
