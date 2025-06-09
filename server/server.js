@@ -53,11 +53,13 @@ const fetchHotelsGeo =require("./internal/api/fetchHotelsGeo.js");
 const fetchHotelDetails = require("./internal/api/fetchHotelOffers.js");
 const fetchHotelOffers = require("./internal/api/fetchHotelOffers.js");
 const { formatHotelOffers } = require("./internal/api/hotelOfferFormatter.js");
+const contentNegotiation = require('./internal/middleware/contentNegotiation.js');
 
 
 // --- Middleware Setup ---
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); // Use the loaded document
 app.use(express.json());
+app.use(contentNegotiation);
 app.use(express.static(path.join(__dirname, 'files')));
 app.use(express.urlencoded({ extended: true }));
 app.use(session({

@@ -1,8 +1,8 @@
 openapi: 3.0.1
 info:
   title: Concerts Ruined My Life (CRML) API
-  description: This is the API documentation for the CRML application, which allows users to search for events, flights, and hotels, and manage their trip details.
-  version: 1.0.0
+  description: This is the API documentation for the CRML application, which allows users to search for events, flights, and hotels, and manage their trip details. The API supports both JSON and XML content types.
+  version: 1.0.1
 servers:
   - url: http://localhost:3000
     description: Local development server
@@ -77,6 +77,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Flight'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Flight'
         '400':
           description: Bad request, missing parameters.
         '500':
@@ -104,6 +109,11 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Hotel'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hotel'
         '400':
           description: Bad request, missing city code.
 
@@ -125,6 +135,11 @@ paths:
           description: A list of hotels near the specified coordinates.
           content:
             application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Hotel'
+            application/xml:
               schema:
                 type: array
                 items:
@@ -172,6 +187,13 @@ paths:
       responses:
         '200':
           description: A list of detailed hotel offers.
+          content:
+            application/json:
+              schema:
+                type: object # Define schema for offers
+            application/xml:
+              schema:
+                type: object
         '400':
           description: Bad request, missing parameters.
 
@@ -191,6 +213,13 @@ paths:
       responses:
         '200':
           description: Geoapify API response with coordinates.
+          content:
+            application/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
 
   /geolocairport:
     get:
@@ -208,6 +237,13 @@ paths:
       responses:
         '200':
           description: Geoapify API response listing nearby airports.
+          content:
+            application/json:
+              schema:
+                type: object
+            application/xml:
+              schema:
+                type: object
 
   # Event API Endpoints
   /event:
@@ -226,6 +262,17 @@ paths:
       responses:
         '200':
           description: A list of formatted event objects.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
         '500':
           description: Internal server error.
 
@@ -245,6 +292,13 @@ paths:
       responses:
         '200':
           description: A detailed, formatted event object.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Event'
         '404':
           description: Event not found.
 
@@ -317,11 +371,15 @@ paths:
       responses:
         '200':
           description: User is authenticated.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Everything good!"
         '402':
           description: User is not authenticated.
 
-  # Database-related endpoints would go here (Events, Costpoints)
-  # Placeholder for a complete specification.
+  # Database-related endpoints
   /profile/events:
     get:
       tags:
@@ -331,6 +389,17 @@ paths:
       responses:
         '200':
           description: A list of saved events.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
         '401':
           description: Unauthorized.
     put:
@@ -347,6 +416,23 @@ paths:
 # Reusable Component Schemas
 components:
   schemas:
+    Event:
+      type: object
+      properties:
+        ID:
+          type: string
+        name:
+          type: string
+        localDate:
+          type: string
+        localTime:
+          type: string
+        venue:
+          type: string
+        artist:
+          type: string
+        address:
+          type: string
     Flight:
       type: object
       properties:

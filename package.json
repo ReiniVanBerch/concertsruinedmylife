@@ -25,6 +25,7 @@
     "node-fetch": "^3.3.2",
     "sqlite3": "^5.1.7",
     "swagger-ui-express": "^5.0.1",
+    "xml2js": "^0.6.2",
     "yamljs": "^0.3.0"
   }
 }

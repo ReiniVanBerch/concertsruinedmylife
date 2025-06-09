@@ -16,8 +16,8 @@ async function fetchAirportGeo(POINT_NAME ) {
             response.on('data', chunk => data += chunk);
             response.on('end', () => {
                 try {
-                    //const event = JSON.parse(data); // Assuming response is JSON
-                    resolve(data);
+                    const airport = JSON.parse(data); // Assuming response is JSON
+                    resolve(airport);
                 } catch (error) {
                     reject(`Error parsing JSON for Geoppoint ${POINT_NAME}: ${error}`);
                 }

@@ -15,7 +15,8 @@ async function fetchGeocode(POINT_NAME ) {
             response.on('end', () => {
                 try {
                     //const event = JSON.parse(data); // Assuming response is JSON
-                    resolve(data);
+                    const geoData = JSON.parse(data);
+                    resolve(geoData);
                 } catch (error) {
                     reject(`Error parsing JSON for Geoppoint ${POINT_NAME}: ${error}`);
                 }

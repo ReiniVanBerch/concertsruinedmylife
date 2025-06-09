@@ -23,8 +23,8 @@ async function fetchHotels(cityCode) {
             response.on('data', chunk => data += chunk);
             response.on('end', () => {
                 try {
-                    //const event = JSON.parse(data); // Assuming response is JSON
-                    resolve(data);
+                    const hotels = JSON.parse(data); // Assuming response is JSON
+                    resolve(hotels);
                 } catch (error) {
                     reject(`Error parsing JSON for movie ${cityCode}: ${error}`);
                 }
