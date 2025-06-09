@@ -45,6 +45,14 @@ const putEvent = require('./internal/database/events/putEvent.js');
 const getEvent = require('./internal/database/events/getEvent.js');
 const deleteEvent = require('./internal/database/events/deleteEvent.js');
 
+const adminLogin = require('./internal/database/admin/adminLogin.js');
+const ensureAdmin = require('./internal/database/admin/ensureAdmin.js');
+const deleteUser = require('./internal/database/admin/deleteUser.js');
+const allUsers = require('./internal/database/admin/allUsers.js');
+
+
+
+
 const fetchHotels = require("./internal/api/fetchHotels");
 const formatHotels = require("./internal/api/formatHotels");
 const fetchGeoCode=require("./internal/api/fetchGeoCode.js");
@@ -53,6 +61,7 @@ const fetchHotelsGeo =require("./internal/api/fetchHotelsGeo.js");
 const fetchHotelDetails = require("./internal/api/fetchHotelOffers.js");
 const fetchHotelOffers = require("./internal/api/fetchHotelOffers.js");
 const { formatHotelOffers } = require("./internal/api/hotelOfferFormatter.js");
+
 
 
 // --- Middleware Setup ---
@@ -170,30 +179,27 @@ app.get('/auth', (req, res) => {
     }
 });
 
-//delete a specified user 
-app.delete("/users/:user", (req, res) => {
-
+/* Admin
+ AAA   DDDD   M   M  IIIII  N   N
+A   A  D   D  MM MM    I    NN  N
+AAAAA  D   D  M M M    I    N N N
+A   A  D   D  M   M    I    N  NN
+A   A  DDDD   M   M  IIIII  N   N
+*/
+app.delete("/admin/:user", (req, res) => {
+    ensureAdmin(req, res, deleteUser);
 });
 
 
-app.get('/users', (req, res) => {
-
-
+app.get('/admin/users', (req, res) => {
+    ensureAdmin(req, res, allUsers);
 });
 
 
 //Admin login!
 //The link is the first layer of security, the second is the code. 
 app.get('/admin/3f9a7c8e2d6b1f4a9e0d7c3b5a8f2e6d1c4b9a0f7d3e5c8b2a1f6d9e7c0b4a3/:admin', (req, res) => {
-    if(process.env.ADMIN_KEY == req.params.admin){
-        req.session.admin_key
-        res.status(200).send(
-            "<p>You now have admin priveledges for this session!<br>"+
-            "To logout go to <a href='/logout'>this link</a> <br>" +
-            "Else you might go <a href ='/admin.html'>here</a></p>");
-    } else {
-        res.status(401).send("You shall feal this sword, foul white whale !!!");
-    }
+    adminLogin(req, res);
 });
 
 

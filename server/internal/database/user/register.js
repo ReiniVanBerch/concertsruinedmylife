@@ -12,12 +12,12 @@ async function register(req, res){
     username = typeof username === 'string' ? username : '';
     password = typeof password === 'string' ? password : '';
 
-    const getUser = db.prepare('SELECT * FROM user WHERE username = ?');
+    const getUser = db.prepare('SELECT * FROM users WHERE username = ?');
     const user = getUser.get(username);
 
     if (!user) {
         const hashed = await bcrypt.hash(password, 8);
-        const insertUser = db.prepare('INSERT INTO user (username, password) VALUES (?, ?)');
+        const insertUser = db.prepare('INSERT INTO users (username, password) VALUES (?, ?)');
 
         insertUser.run(username, hashed);
 
