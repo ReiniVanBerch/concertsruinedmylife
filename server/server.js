@@ -22,7 +22,6 @@ const { emitWarning } = require('process');
 const fetchEvents = require('./internal/api/fetchevents.js');
 const formatEvents = require('./internal/api/formatEvents.js');
 const fetchFlights = require('./internal/api/fetchFlights.js');
-const formatMovies = require('./internal/api/__ref_formatMovies.js');
 const eventDetails = require('./internal/api/fetcheventdetails.js');
 const formatEventDetails = require('./internal/api/formatEventDetails.js');
 const formatFlight = require('./internal/api/formatFlight.js');
@@ -62,6 +61,8 @@ const fetchHotelDetails = require("./internal/api/fetchHotelOffers.js");
 const fetchHotelOffers = require("./internal/api/fetchHotelOffers.js");
 const { formatHotelOffers } = require("./internal/api/hotelOfferFormatter.js");
 const contentNegotiation = require('./internal/middleware/contentNegotiation.js');
+const patchEvent = require('./internal/database/events/patchEvent.js');
+const changePassword = require('./internal/database/admin/changePassword.js');
 
 
 
@@ -116,12 +117,12 @@ app.get('/accomodationsoffers', async (req, res) => {
     res.send(formattedData);
 });
 
-app.get('/geoloc', async function (req, res) {7
+app.get('/geoloc', async function (req, res) {
     const { POI } = req.query;
     res.send(await fetchGeoCode(POI));
 });
 
-app.get('/geolocairport', async function (req, res) {7
+app.get('/geolocairport', async function (req, res) {
     const { POI } = req.query;
     res.send(await fetchAirportGeo(POI));
 });
@@ -136,8 +137,8 @@ app.get('/event/', async function (req, res) {
     const keyword = req.query.keyword;
     try {
         const eventsData = await fetchEvents(keyword);
-        console.log('Type of eventsData:', typeof eventsData);
-        console.log('Content of eventsData:', eventsData);
+        //console.log('Type of eventsData:', typeof eventsData);
+        //console.log('Content of eventsData:', eventsData);
         const formattedData = formatEvents(eventsData);
         res.status(200).send(formattedData); // Send status with data
     } catch (error) {
@@ -181,6 +182,14 @@ app.get('/auth', (req, res) => {
     }
 });
 
+//See if loggedIn, and if username
+app.get('/profile', (req, res) => {
+    ensureAuthenticated(req, res, () => {
+        res.redirect(302, '/profile.html');
+    });
+});
+
+
 /* Admin
  AAA   DDDD   M   M  IIIII  N   N
 A   A  D   D  MM MM    I    NN  N
@@ -188,7 +197,21 @@ AAAAA  D   D  M M M    I    N N N
 A   A  D   D  M   M    I    N  NN
 A   A  DDDD   M   M  IIIII  N   N
 */
-app.delete("/admin/:user", (req, res) => {
+
+app.get("/admin/check", (req, res) => {
+    if(req.session.admin_key === process.env.admin_key){
+        res.status(200).send("Admin");
+    } else {
+        res.status(401).send("Not allowed");
+    }
+});
+
+app.patch("/admin/users", (req, res) => {
+    ensureAdmin(req, res, changePassword);
+});
+
+
+app.delete("/admin/users/:username", (req, res) => {
     ensureAdmin(req, res, deleteUser);
 });
 
@@ -198,6 +221,8 @@ app.get('/admin/users', (req, res) => {
 });
 
 
+
+
 //Admin login!
 //The link is the first layer of security, the second is the code. 
 app.get('/admin/3f9a7c8e2d6b1f4a9e0d7c3b5a8f2e6d1c4b9a0f7d3e5c8b2a1f6d9e7c0b4a3/:admin', (req, res) => {
@@ -205,12 +230,6 @@ app.get('/admin/3f9a7c8e2d6b1f4a9e0d7c3b5a8f2e6d1c4b9a0f7d3e5c8b2a1f6d9e7c0b4a3/
 });
 
 
-//See if loggedIn, and if username
-app.get('/profile', (req, res) => {
-    ensureAuthenticated(req, res, () => {
-        res.redirect(302, '/profile.html');
-    });
-});
 
 
 /* Event
@@ -228,11 +247,16 @@ app.get('/profile/events', async function (req, res) { ensureAuthenticated(req, 
 app.get('/profile/events/:event', async function (req, res) { ensureAuthenticated(req, res, getEvent); })
 
 //Add an event to user
-app.put('/profile/events', async function (req, res) { ensureAuthenticated(req, res, putEvent); })
+app.put('/profile/events', async function (req, res) { 
+    ensureAuthenticated(req, res, putEvent); 
+})
 
 //Remove an event to user
 app.delete('/profile/events/:event', async function (req, res) { ensureAuthenticated(req, res, deleteEvent); })
 
+app.patch('/profile/events', async function (req, res) {
+    ensureAuthenticated(req, res, patchEvent);
+});
 
 
 

@@ -3,7 +3,7 @@ const db = require('../databaseConnector.js');
 async function deleteEvent(req, res){
 
     if (!req.session.username) {
-        return res.status(401).send('Not logged in');
+        return res.status(401).send({message:'Not logged in'});
     }
     else{
 
@@ -15,10 +15,10 @@ async function deleteEvent(req, res){
 
         if (result.changes > 0) {
             console.log("success");
-            res.status(200).send({ success: true, message: "Event deleted successfully." });
+            res.status(200).send({message: "Event deleted successfully." });
         } else {
             console.log("failure");
-            res.status(404).send({ success: false, message: "Event not found or unauthorized." });
+            res.status(404).send({message: "Event not found or unauthorized." });
         }
     }
 }
