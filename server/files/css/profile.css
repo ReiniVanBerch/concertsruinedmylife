@@ -1,0 +1,29 @@
+@import url(style.css);
+
+/* buttons */
+a, .deleteButton {
+  display: inline-block;
+  background: var(--clr-primary);
+  color: var(--clr-bg);
+  border: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background var(--trans), transform var(--trans);
+  margin: 0.5rem 0.5rem;
+  text-decoration: none;
+}
+a:hover, a:active {
+  background: var(--clr-accent);
+  color: var(--clr-dark);
+  transform: translateY(-2px);
+}
+
+td, tr {
+   padding: 0rem 1rem; 
+}
+
+p, h2, th {
+   margin: 0.5rem 0.5rem; 
+}

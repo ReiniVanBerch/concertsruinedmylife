@@ -139,6 +139,7 @@ window.onload = async function () {
 
 
                 let deleteText = document.createElement("p");
+                deleteText.className = "deleteButton";
                 deleteText.innerHTML = "Delete";
                 deleteText.addEventListener('click', function () {
                     deleteEvent(event.id);
