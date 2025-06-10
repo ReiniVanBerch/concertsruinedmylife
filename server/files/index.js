@@ -92,7 +92,7 @@ async function displayEvents(keyword) {
 
 async function fetchAndDisplayEventDetails(eventID) {
     const eventsContainer = document.getElementById('eventsContainer');
-    const containerTitle = document.querySelector('#event-details-container h1');
+    const containerTitle = document.querySelector('#event-details-container h2');
     if (!eventsContainer || !containerTitle) { return; }
 
     eventsContainer.innerHTML = '<p>Loading event details...</p>';
@@ -390,7 +390,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetchAndDisplayEventDetails(target.dataset.eventId);
             }
             if (target.classList.contains('back-button')) {
-                const containerTitle = document.querySelector('#event-details-container h1');
+                const containerTitle = document.querySelector('#event-details-container h2');
                 eventsContainer.innerHTML = lastSearchResultsHTML;
                 if (containerTitle) { containerTitle.style.display = 'block'; }
                 // --- Remove marker when going back ---
