@@ -1,0 +1,14 @@
+body{
+    width:90vw;
+    align-items: center;
+    
+}
+
+#eventForm {
+    padding: 25vh;
+}
+
+.textBox{
+    width: 50%;
+    height: 1.5rem;
+}
