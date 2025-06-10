@@ -50,9 +50,13 @@ window.onload = async function () {
                         deleteText.innerHTML = "Delete";
                         deleteText.addEventListener('click', function () {deleteUser(user.username);});
 
+                        let changePasswordText = document.createElement("a");
+                        changePasswordText.innerHTML = "Change Password";
+                        changePasswordText.href = `changePassword.html?username=${user.username}`;
 
                         article.appendChild(title);
                         article.appendChild(deleteText);
+                        article.appendChild(changePasswordText);
                         article.appendChild(document.createElement("hr"));
                         listElement.appendChild(article);
                     });

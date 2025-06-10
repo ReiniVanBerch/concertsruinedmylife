@@ -62,6 +62,7 @@ const fetchHotelOffers = require("./internal/api/fetchHotelOffers.js");
 const { formatHotelOffers } = require("./internal/api/hotelOfferFormatter.js");
 const contentNegotiation = require('./internal/middleware/contentNegotiation.js');
 const patchEvent = require('./internal/database/events/patchEvent.js');
+const changePassword = require('./internal/database/admin/changePassword.js');
 
 
 
@@ -116,12 +117,12 @@ app.get('/accomodationsoffers', async (req, res) => {
     res.send(formattedData);
 });
 
-app.get('/geoloc', async function (req, res) {7
+app.get('/geoloc', async function (req, res) {
     const { POI } = req.query;
     res.send(await fetchGeoCode(POI));
 });
 
-app.get('/geolocairport', async function (req, res) {7
+app.get('/geolocairport', async function (req, res) {
     const { POI } = req.query;
     res.send(await fetchAirportGeo(POI));
 });
@@ -205,6 +206,11 @@ app.get("/admin/check", (req, res) => {
     }
 });
 
+app.patch("/admin/users", (req, res) => {
+    ensureAdmin(req, res, changePassword);
+});
+
+
 app.delete("/admin/users/:username", (req, res) => {
     ensureAdmin(req, res, deleteUser);
 });
@@ -213,6 +219,8 @@ app.delete("/admin/users/:username", (req, res) => {
 app.get('/admin/users', (req, res) => {
     ensureAdmin(req, res, allUsers);
 });
+
+
 
 
 //Admin login!
