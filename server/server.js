@@ -61,6 +61,7 @@ const fetchHotelDetails = require("./internal/api/fetchHotelOffers.js");
 const fetchHotelOffers = require("./internal/api/fetchHotelOffers.js");
 const { formatHotelOffers } = require("./internal/api/hotelOfferFormatter.js");
 const contentNegotiation = require('./internal/middleware/contentNegotiation.js');
+const patchEvent = require('./internal/database/events/patchEvent.js');
 
 
 
@@ -245,6 +246,9 @@ app.put('/profile/events', async function (req, res) {
 //Remove an event to user
 app.delete('/profile/events/:event', async function (req, res) { ensureAuthenticated(req, res, deleteEvent); })
 
+app.patch('/profile/events', async function (req, res) {
+    ensureAuthenticated(req, res, patchEvent);
+});
 
 
 

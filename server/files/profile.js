@@ -1,3 +1,5 @@
+
+
 function deleteEvent(id) {
     
 
@@ -13,9 +15,9 @@ function deleteEvent(id) {
     }
     xhr.open("DELETE", `/profile/events/${id}`);
     xhr.send();
-
-
 }
+
+
 
 function deleteCostpoint(id) {
     console.log(id);
@@ -142,6 +144,11 @@ window.onload = async function () {
                     deleteEvent(event.id);
                 });
 
+                let patchText = document.createElement("a");
+                patchText.innerHTML = "Alter me!";
+                patchText.href = `/patchEvent.html?event=${encodeURIComponent(event.id)}`;
+
+
                 if(costpoints[event.id]){
  
                     secondRow.appendChild(costpoints[event.id]);
@@ -152,6 +159,7 @@ window.onload = async function () {
 
                 secondRow.appendChild(costpointText);
                 secondRow.appendChild(deleteText);
+                secondRow.appendChild(patchText);
 
 
                 article.appendChild(title);

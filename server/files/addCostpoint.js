@@ -1,18 +1,18 @@
 
-        window.onload = async function () {
+window.onload = async function () {
 
-        let loginCheck = new XMLHttpRequest();
-        loginCheck.open("GET", "/auth");
-        loginCheck.send();
+let loginCheck = new XMLHttpRequest();
+loginCheck.open("GET", "/auth");
+loginCheck.send();
 
-        loginCheck.onload = async function(){
+loginCheck.onload = async function(){
 
-            if(loginCheck.status === 200){
+    if(loginCheck.status === 200){
 
         const urlParams = new URLSearchParams(window.location.search);
         const eventID = urlParams.get("event");
         document.querySelector('input[name="eventID"]').value = eventID;
-        
+
         document.getElementById('costpointForm').addEventListener('submit', function (e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -30,9 +30,9 @@
             let costfield = document.getElementById("cost");
             costfield.value = "";
         });
-            } else{
-                window.location.href = '/auth.html';
-            }
-        }}
+    } else{
+        window.location.href = '/auth.html';
+    }
+}}
 
-        console.log("I am in");
+console.log("I am in");
