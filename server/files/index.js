@@ -67,7 +67,7 @@ async function getEvents(keyword) {
 
 async function displayEvents(keyword) {
     const eventsContainer = document.getElementById('eventsContainer');
-    const containerTitle = document.querySelector('#event-details-container h1');
+    const containerTitle = document.querySelector('#event-details-container h2');
     if (!eventsContainer || !containerTitle) { return; }
     containerTitle.style.display = 'block';
     eventsContainer.innerHTML = '<p>Loading events...</p>';
