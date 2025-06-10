@@ -8,20 +8,22 @@ async function deleteUser(req, res){
     let username = req.params.username;
 
 
-    console.log("deleteUser request received");
 
     // Ensure they are strings (defensive programming)
     username = typeof username === 'string' ? username : '';
 
 
-    const deleteEvent = db.prepare('DELETE FROM events WHERE username = ?');
-    const events = deleteEvent.run(username);
-    const deleteCostpoints = db.prepare('DELETE FROM costpoints WHERE username = ?');
-    const costpoints = deleteCostpoints.run(username);
-    const delUser = db.prepare('DELETE FROM user WHERE username = ?');
-    const user = delUser.all(username);
+    db.prepare('DELETE FROM events WHERE username = ?').run(username);
+    db.prepare('DELETE FROM costpoints WHERE username = ?').run(username);
+    const delUser = db.prepare('DELETE FROM users WHERE username = ?').run(username);
 
-    res.status(200).send({message:'Deleted User'});
+    if (delUser.changes > 0) {
+        res.status(200).send({message:'Deleted User'});
+    } else {
+        res.status(404).send({message:"User not Found"});
+    }
+
+    
 }
 
 module.exports = deleteUser;

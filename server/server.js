@@ -205,7 +205,7 @@ app.get("/admin/check", (req, res) => {
     }
 });
 
-app.delete("/admin/:user", (req, res) => {
+app.delete("/admin/users/:username", (req, res) => {
     ensureAdmin(req, res, deleteUser);
 });
 
