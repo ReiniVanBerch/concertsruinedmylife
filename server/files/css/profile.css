@@ -14,7 +14,7 @@ a, .deleteButton {
   margin: 0.5rem 0.5rem;
   text-decoration: none;
 }
-a:hover, a:active {
+a:hover, a:active, .deleteButton:hover {
   background: var(--clr-accent);
   color: var(--clr-dark);
   transform: translateY(-2px);

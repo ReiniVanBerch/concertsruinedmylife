@@ -139,6 +139,10 @@ input[type="number"] {
   margin-top: 0.25rem;
   transition: border-color var(--trans);
 }
+
+input[type=checkbox]:checked { /*checkbox colour*/
+  accent-color: var(--clr-primary);
+}
 input:focus {
   outline: none;
   border-color: var(--clr-primary);
@@ -162,7 +166,7 @@ button {
   font-size: 1rem;
   cursor: pointer;
   transition: background var(--trans), transform var(--trans);
-  margin: 0.5rem 0;
+  margin: 0.5rem 0.5rem 0.5rem 0rem;
 }
 button:hover {
   background: var(--clr-accent);
@@ -190,6 +194,69 @@ button:hover {
   flex-basis: 100%;                  /* checkbox full width */
   margin-top: var(--spacing);
 }
+
+/* Flight & Hotel Results: show as row on desktop, column on mobile */
+#transport-details-container {
+  display: none;
+  gap: var(--spacing);
+  margin-top: var(--spacing);
+  /* note: no display here—JS will toggle it */
+}
+
+#transport-details-container.show {
+  display: flex;             /* turn on flex when JS adds .show */
+  flex-wrap: wrap;           /* wrap on very narrow widths */
+}
+
+#transport-details-container.show > h2 {
+  flex-basis: 100%;
+  margin-bottom: var(--spacing);
+}
+
+/* Each panel half-width on desktop */
+#transportsContainer,
+#accomodationsContainer {
+  flex: 1 1 45%;
+  min-width: 200px;
+  background: var(--clr-bg);
+  border: 1px solid var(--clr-medium);
+  border-radius: var(--radius);
+  padding: var(--spacing);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* stacking for mobile */
+@media (max-width: 600px) {
+  #transport-details-container.show {
+    flex-direction: column;
+  }
+  #transportsContainer,
+  #accomodationsContainer {
+    flex: none;
+    width: 100%;
+  }
+}
+
+
+/* reset list styles inside each panel */
+.flight-list,
+.hotel-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+}
+
+/* style individual items */
+.flight-list-item,
+.hotel-list-item {
+  margin-bottom: var(--spacing);
+  padding: var(--spacing);
+  background: var(--clr-card);
+  border: 1px solid var(--clr-medium);
+  border-radius: var(--radius);
+}
+
 
 /* stacking for mobile*/
 @media (max-width: 600px) {

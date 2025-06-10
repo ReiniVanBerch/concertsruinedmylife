@@ -112,8 +112,13 @@ async function fetchAndDisplayEventDetails(eventID) {
             detailElement.innerHTML = `<h3>${eventDetail.name || "N/A"}</h3><p><strong>Date:</strong> ${eventDetail.localDate || "N/A"} at ${eventDetail.localTime || ''}</p><p><strong>Venue:</strong> ${eventDetail.venue || "N/A"}</p><p><strong>Address:</strong> ${eventDetail.address || "N/A"}</p>`;
             eventsContainer.appendChild(detailElement);
 
+            const eventDate = new Date(eventDetail.localDate);
             document.getElementById('departureDate').value = eventDetail.localDate || '';
+            eventDate.setDate(eventDate.getDate() + 1);
+            document.getElementById('returnDate').value = eventDate.toISOString().split('T')[0];
+
             document.getElementById('checkInDate').value = eventDetail.localDate || '';
+            document.getElementById('checkOutDate').value = eventDate.toISOString().split('T')[0];
 
             // --- SHOW ON MAP ---
             if (eventDetail.lat && eventDetail.lng) {
@@ -304,11 +309,15 @@ async function searchForTravel() {
     const numberTravellers = document.getElementById('numberTravellers').value;
     const roomQuantity = document.getElementById('accomGuests').value || 1;
 
+    document.getElementById('transport-details-container').classList.add('show');
+
+
     if (!departureLocationText || !destinationIata || !departureDate || !returnDate) {
         alert('Please select an event and fill in all required travel fields.');
         return;
     }
 
+    
     // --- 1. Geocode departure and search for flights ---
     const fromIata = await getIataCode(departureLocationText);
     if (!fromIata) {
