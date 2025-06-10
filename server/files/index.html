@@ -20,19 +20,23 @@
             <ul>
                 <li><a href="#">CRML</a></li>
                 <li><a href="profile/">Profile</a></li>
+                <!--<li><a href="recommendations/">recommendations</a></li>-->
             </ul>
             
         </nav>
         <main>
-            <div>
-                <div id="artistSearch">
-                    <h2>what gig are you looking for?</h2>
+            <div id="artistSearch">
+  <h2>what gig are you going to?</h2>
 
-                    <input placeholder="artist and city or venue" id="keywordInput" type="text"><button id="searchButton">Get Details</button>
-                </div>
-            </div>
+  <!-- new wrapper just for the input + button -->
+  <div class="searchControls">
+    <input placeholder="artist and city or venue" id="keywordInput" type="text">
+    <button id="searchButton">Get Details</button>
+  </div>
+</div>
+
             <div id="event-details-container">
-                <h1>Event Details</h1>
+                <h2>Event Details</h2>
 
                 <div id="eventsContainer">
                     <p>Enter a keyword and click "Search Events" to see results.</p>
@@ -40,54 +44,76 @@
 
             </div>
             <div>
-                <form id="transportationSearch">
+                <form class="transportationSearch">
                     <h2>let's sort out travel details</h2>
                     <fieldset>
                         
-                        <div>
+                        <div class="transFieldsContainer">
                             <h3>transportation</h3>
-                            <label for="departureLocation">from</label>
-                            <input type="text" id="departureLocation" name="departureLocation" placeholder="city or airport" maxlength="100" required>
+                            
+                            <div class="transDataField">
+                                <label for="departureLocation">from</label>
+                                <input type="text" id="departureLocation" name="departureLocation" placeholder="city or airport" maxlength="100" required>
 
-                            <label for="destinationLocation">to</label>
-                            <input type="text" id="destinationLocation" name="destinationLocation" placeholder="city or airport" maxlength="100" required>
-
-                            <label for="departureDate">depart on</label>
-                            <input type="date" id="departureDate" name="departureDate" required>
-
-                            <label for="returnDate">return on</label>
-                            <input type="date" id="returnDate" name="returnDate" required>
-
-                            <label for="numberTravellers">travellers</label>
-                            <input type="number" id="numberTravellers" name="numberTravellers" value=1 max="13" min="1" required>
-                            <br>
-
-                            <input type="checkbox" id="TransportDiffersFromAccom" name="TransportDiffersFromAccom"  value="differentDetails" >
-                            <label for="TransportDiffersFromAccom">transportation details differ from accommodation details</label> 
+                            </div>
+                            
+                            <div class="transDataField">
+                                <label for="destinationLocation">to</label>
+                                <input type="text" id="destinationLocation" name="destinationLocation" placeholder="city or airport" maxlength="100" required>
+                            </div>
+                            
+                            <div class="transDataField">
+                                <label for="departureDate">depart on</label>
+                                <input type="date" id="departureDate" name="departureDate" required>
+                            </div>
+                            
+                            <div class="transDataField">
+                                <label for="returnDate">return on</label>
+                                <input type="date" id="returnDate" name="returnDate" required>
+                            </div>
+                            
+                            <div class="transDataField">
+                                <label for="numberTravellers">travellers</label>
+                                <input type="number" id="numberTravellers" name="numberTravellers" value=1 max="13" min="1" required>
+                            </div>
+                            
+                            
+                            
+                            <div class="difDetailsContainer">
+                                <input type="checkbox" id="TransportDiffersFromAccom" name="TransportDiffersFromAccom"  value="differentDetails" >
+                                <label for="TransportDiffersFromAccom">transportation details differ from accommodation details</label>
+                            </div>
+                                                        
                             <script>
                                 $(document).ready(function() {
                                     $('input[type="checkbox"]').click(function() {
                                         var inputValue = $(this).attr("value");
-                                        $("." + inputValue).toggle();
+                                        $("." + inputValue).toggleClass("selectt");
                                     });
                                 });
                             </script>
                         </div>
 
 
-                        <div class="differentDetails selectt">
-                            <br>
+                        <div class="transFieldsContainer differentDetails selectt">
                             <h3>accommodation</h3>
 
-                            <label for="checkInDate">check in date</label>
-                            <input type="date" id="checkInDate" name="checkInDate" required>
-
-                            <label for="checkOutDate">check out date</label>
-                            <input type="date" id="checkOutDate" name="checkOutDate" required>
-
-                            <label for="accomGuests">guests at accommodation</label>
-                            <input type="number" id="accomGuests" name="accomGuests" value=1 max="13" min="1" required>
-                            <br>
+                            <div class="transDataField">
+                                <label for="checkInDate">check in date</label>
+                                <input type="date" id="checkInDate" name="checkInDate" required>
+                            </div>
+                            
+                            <div class="transDataField">
+                                <label for="checkOutDate">check out date</label>
+                                <input type="date" id="checkOutDate" name="checkOutDate" required>
+                            </div>
+                            
+                            <div class="transDataField">
+                                <label for="accomGuests">guests at accommodation</label>
+                                <input type="number" id="accomGuests" name="accomGuests" value=1 max="13" min="1" required>
+                            </div>
+                            
+                            
                         </div>
                         
 
@@ -104,7 +130,7 @@
                         <button type="button" id="searchFlightsButton">Search Flights</button>
 
 
-                        <div id="transport-details-container">
+                        <!-- <div id="transport-details-container">
                             <h1>Flight and Hotel Details</h1>
 
                             <div id="transportsContainer">
@@ -112,9 +138,9 @@
                             </div>
                             <div id="accomodationsContainer">
                                 <p></p>
-                            </div>
+                            </div> 
 
-                        </div>
+                        </div> -->
                     </fieldset>
 
 
@@ -125,12 +151,13 @@
         </main>
 
         <footer>
-            <ul>
-                <li>
-                    Visit us at
-                    <a href="https://www.fh-campuswien.ac.at/" target="_blank">UAS Campus Vienna</a>
+            <!--<ul class="spotlight">
+                <li class="footerheader">
+                    <h4>spotlight of the week:</h4>
                 </li>
-            </ul>
+                <li class="spotArtists"><a href="https://louis-tomlinson.com/" target="_blank">Louis Tomlinson</a>: currently on a festival run and preparing to release his third studio album</li>
+                
+            </ul> -->
         </footer>
     
     </body>

@@ -30,7 +30,7 @@ async function displayEvents(keyword) {
         events.forEach(event => {
             const li = document.createElement('li');
             li.className = 'event-list-item';
-            li.innerHTML = `<div><strong>Name:</strong> ${event.name || 'N/A'}<br><strong>Date:</strong> ${event.localDate ? new Date(event.localDate).toLocaleDateString() : 'N/A'}<br><strong>Venue:</strong> ${event.venue || 'N/A'}</div><button class="details-button" data-event-id="${event.ID}" style="margin-top: 5px;">Select this Event</button>`;
+            li.innerHTML = `<div><strong>Name:</strong> ${event.name || 'N/A'}<br><strong>Date:</strong> ${event.localDate ? new Date(event.localDate).toLocaleDateString() : 'N/A'}<br><strong>Venue:</strong> ${event.venue || 'N/A'}</div><button class="details-button" data-event-id="${event.ID}" >Select this Event</button>`;
             ul.appendChild(li);
         });
         eventsContainer.appendChild(ul);
@@ -54,7 +54,7 @@ async function fetchAndDisplayEventDetails(eventID) {
         if (!response.ok) { throw new Error(`HTTP error! Status: ${response.status}`); }
         const eventDetail = await response.json();
 
-        eventsContainer.innerHTML = `<button class="back-button" style="margin-bottom: 15px;">← Back to Results</button>`;
+        eventsContainer.innerHTML = `<button class="back-button">← Back to Results</button>`;
 
         if (eventDetail && eventDetail.name !== "No Event found") {
             const detailElement = document.createElement('div');
