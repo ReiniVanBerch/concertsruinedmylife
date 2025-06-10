@@ -5,6 +5,7 @@ let lastSearchResultsHTML = '';
 
 let map = null;
 let marker = null;
+let hotelMarkers = [];
 
 
 // --- ADD EVENT TO PRIVATE PAGE ---
@@ -112,13 +113,8 @@ async function fetchAndDisplayEventDetails(eventID) {
             detailElement.innerHTML = `<h3>${eventDetail.name || "N/A"}</h3><p><strong>Date:</strong> ${eventDetail.localDate || "N/A"} at ${eventDetail.localTime || ''}</p><p><strong>Venue:</strong> ${eventDetail.venue || "N/A"}</p><p><strong>Address:</strong> ${eventDetail.address || "N/A"}</p>`;
             eventsContainer.appendChild(detailElement);
 
-            const eventDate = new Date(eventDetail.localDate);
             document.getElementById('departureDate').value = eventDetail.localDate || '';
-            eventDate.setDate(eventDate.getDate() + 1);
-            document.getElementById('returnDate').value = eventDate.toISOString().split('T')[0];
-
             document.getElementById('checkInDate').value = eventDetail.localDate || '';
-            document.getElementById('checkOutDate').value = eventDate.toISOString().split('T')[0];
 
             // --- SHOW ON MAP ---
             if (eventDetail.lat && eventDetail.lng) {
@@ -262,6 +258,8 @@ async function getHotelOffers(searchParams) {
     }
 }
 
+
+
 // Displays hotels with their corresponding offers.
 function displayHotelsWithOffers(hotels, offers) {
     const accommodationsContainer = document.getElementById('accomodationsContainer');
@@ -277,6 +275,9 @@ function displayHotelsWithOffers(hotels, offers) {
 
     const ul = document.createElement('ul');
     ul.className = 'hotel-list';
+
+    // filter only hotels with offers, or display all
+    let hotelsWithOffers = hotels.filter(h => offerMap.has(h.hotelId));
 
     offers.forEach(offer => {
         const li = document.createElement('li');
@@ -296,6 +297,9 @@ function displayHotelsWithOffers(hotels, offers) {
     } else {
         accommodationsContainer.appendChild(ul);
     }
+
+     // --- Add hotel markers on map for currently displayed hotels
+    showHotelsOnMap(hotelsWithOffers);
 }
 
 // MODIFIED: This function now chunks the hotel ID requests to avoid URL length errors.
@@ -309,15 +313,11 @@ async function searchForTravel() {
     const numberTravellers = document.getElementById('numberTravellers').value;
     const roomQuantity = document.getElementById('accomGuests').value || 1;
 
-    document.getElementById('transport-details-container').classList.add('show');
-
-
     if (!departureLocationText || !destinationIata || !departureDate || !returnDate) {
         alert('Please select an event and fill in all required travel fields.');
         return;
     }
 
-    
     // --- 1. Geocode departure and search for flights ---
     const fromIata = await getIataCode(departureLocationText);
     if (!fromIata) {
@@ -363,15 +363,69 @@ async function searchForTravel() {
 
 
 function showConcertOnMap(lat, lng, title = "Selected Concert") {
+
+    const concertIcon = L.icon({
+        iconUrl: 'concert_icon_red.png',
+        iconSize: [24, 32], 
+        iconAnchor: [12, 32],
+        popupAnchor: [0, -32]
+    });
     //console.log("SHOW marker at:", lat, lng, title);
     if (!map) return;
     if (marker) map.removeLayer(marker);
-    marker = L.marker([lat, lng]).addTo(map)
+    marker = L.marker([lat, lng], {icon: concertIcon})
+        .addTo(map)
         .bindPopup(title)
         .openPopup();
     map.setView([lat, lng], 15);
+    
 }
 
+// --- MAP: Show multiple hotel markers ---
+function showHotelsOnMap(hotels) {
+    hotelMarkers.forEach(m => map.removeLayer(m));
+    hotelMarkers = [];
+    let bounds = [];
+
+    if (!hotels || !hotels.length) {
+        console.log("No hotels to mark on map!");
+        return;
+    }
+
+    console.log("Hotels to add markers for:", hotels);
+    hotels.forEach(hotel => {
+        // LOGGING
+        console.log("Check hotel coords:", hotel.name, hotel.latitude, hotel.longitude);
+
+        if (hotel.latitude && hotel.longitude) {
+            let hMarker = L.marker([hotel.latitude, hotel.longitude], {icon: L.icon({
+                iconUrl: 'hotel_icon_blue.png',
+                iconSize: [24, 32],
+                iconAnchor: [12, 32],
+                popupAnchor: [0, -32],
+            })})
+            .addTo(map)
+            .bindPopup(`<strong>${hotel.name}</strong>${hotel.address ? '<br>' + hotel.address : ''}`);
+
+            // --- Make popup open on hover ---
+            hMarker.on('mouseover', function(e) { this.openPopup(); });
+            hMarker.on('mouseout', function(e) { this.closePopup(); });
+
+            hotelMarkers.push(hMarker);
+            bounds.push([hotel.latitude, hotel.longitude]);
+        }
+    });
+
+     // Optionally add the concert marker's location to bounds so both are visible (if marker exists)
+    if (marker && marker.getLatLng) {
+        const eventLatLng = marker.getLatLng();
+        bounds.push([eventLatLng.lat, eventLatLng.lng]);
+    }
+    // Zoom out to fit all markers
+    if (bounds.length > 0) {
+        map.fitBounds(bounds, {padding: [30, 30]});
+    }
+}
 
 
 
@@ -407,6 +461,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     map.removeLayer(marker);
                     marker = null;
                 }
+                 // Remove hotel markers too!
+                hotelMarkers.forEach(m => map.removeLayer(m));
+                hotelMarkers = [];
             }
         });
     }

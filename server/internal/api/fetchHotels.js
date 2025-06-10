@@ -18,20 +18,26 @@ async function fetchHotels(cityCode) {
                 'Authorization': `Bearer ${bearerToken}`
             }
         }
-        https.get(url,options, (response) => {
+        https.get(url, options, (response) => {
             let data = '';
             response.on('data', chunk => data += chunk);
             response.on('end', () => {
                 try {
-                    const hotels = JSON.parse(data); // Assuming response is JSON
-                    resolve(hotels);
+                    const amadeusResult = JSON.parse(data); // API response
+                    const formattedHotels = (amadeusResult.data || []).map(hotel => ({
+                        hotelId: hotel.hotelId,
+                        name: hotel.name,
+                        latitude: hotel.geoCode?.latitude ?? null,
+                        longitude: hotel.geoCode?.longitude ?? null,
+                        address: hotel.address ? hotel.address.lines ? hotel.address.lines.join(', ') : '' : ''
+                    }));
+                    // Return as { data: [...] } for compatibility
+                    resolve({ data: formattedHotels });
                 } catch (error) {
-                    reject(`Error parsing JSON for movie ${cityCode}: ${error}`);
+                    reject(`Error parsing hotel data: ${error}`);
                 }
             });
-        }).on('error', (error) => {
-            reject(`Error fetching data for ${cityCode}: ${error}`);
-        });
+        })
     });
 
 
