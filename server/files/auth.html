@@ -3,21 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/auth.css">
+
     <title>Authentication</title>
     <link rel="stylesheet" href="./css/profile.css">
 </head>
 <body>
+    <section id="eventForm">
     <form method="post" action="/login/" id="auth">
         <div>
             <label for="username">Username</label>
-            <input type="text"
+            <input 
+                class="textBox"
+                type="text"
                 id="username"
                 name="username"
                 v-model="username"
                 pattern="^[a-zA-Z0-9_]{3,20}$"
                 oninvalid="toggleMismatch(this,'Username must be 3–20 characters and may only include letters, numbers, underscores, or dashes.' ,'usernameError')"
                 oninput="resetMismatch(this,'usernameError')"
-            required>
+                required>
             <p id="usernameError"></p>
         </div>
 
@@ -25,6 +32,7 @@
         <div>
             <label for="password">Password</label>
             <input
+                class="textBox"
                 type="password"
                 id="password"
                 name="password"
@@ -32,13 +40,13 @@
                 oninvalid="toggleMismatch(this, 'Must contain at least one  number and one uppercase and lowercase letter, and at least 8 or more characters',  'passwordError')"
                 oninput="resetMismatch(this, 'passwordError')"
                 required>
-            <i class="fa-solid fa-eye" id="toggleEye" onclick="togglePassword()"></i>
             <p id="passwordError"></p>
         </div>
         <button type="submit" id="submit">Login</button>
         <button type="button" id="switchButton" onclick="toggleRegister()">Switch to Register</button>
 
     </form>
+    </section>
     <script>
     function toggleMismatch(input, error, id){
         input.setCustomValidity(error);

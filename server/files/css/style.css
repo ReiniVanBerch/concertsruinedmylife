@@ -128,6 +128,7 @@ h3 {
 
 /* inputs */
 input[type="text"],
+input[type="password"],
 input[type="date"],
 input[type="number"] {
   width: 100%;

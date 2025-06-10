@@ -26,4 +26,21 @@ td, tr {
 
 p, h2, th {
    margin: 0.5rem 0.5rem; 
+}body{
+    width: 80vw;
+    align-items: center;
+}
+
+#content {
+    width:100%;
+    padding: 5vh;
+}
+
+li {
+    text-decoration: none;
+}
+
+.textBox{
+    width: 50%;
+    height: 1.5rem;
 }
