@@ -10,6 +10,8 @@ async function putEvent(req, res){
         let event = req.body.event;
 
         const events = db.prepare('INSERT INTO events (username, name) VALUES (?, ?)').run(uname, event);
+
+        res.status(200).send('Event added');
     }
 }
 

@@ -7,6 +7,50 @@ let map = null;
 let marker = null;
 
 
+// --- ADD EVENT TO PRIVATE PAGE ---
+window.eventAddPrivate =  function (id, title){
+    
+    let loginCheck = new XMLHttpRequest();
+    loginCheck.open("GET", "/auth");
+    loginCheck.send();
+
+    loginCheck.onload = async function(){
+        console.log("login loaded");
+        let error = document.getElementById(`AddTo${id}Error`);
+
+        try{
+            error.textContent ="WHITE WHALE";
+            if(loginCheck.status === 200){
+                
+
+                let o = {};
+                o.event = title;
+                console.log(o);
+                let response = await fetch('/profile/events', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(o),
+                });
+ 
+                if (response.ok) {
+                error.textContent = "✅ Successfully added";
+                } else {
+                error.textContent = "❌ Failed to add event.";
+                }
+            }
+            else{
+                error.textContent = "Not logged in...";
+            }
+        }
+        catch(err){
+            error.textContent = err.message;
+        }
+    }
+}
+
+
 // --- EVENT SEARCH FUNCTIONS ---
 
 async function getEvents(keyword) {
@@ -35,7 +79,8 @@ async function displayEvents(keyword) {
         events.forEach(event => {
             const li = document.createElement('li');
             li.className = 'event-list-item';
-            li.innerHTML = `<div><strong>Name:</strong> ${event.name || 'N/A'}<br><strong>Date:</strong> ${event.localDate ? new Date(event.localDate).toLocaleDateString() : 'N/A'}<br><strong>Venue:</strong> ${event.venue || 'N/A'}</div><button class="details-button" data-event-id="${event.ID}" style="margin-top: 5px;">Select this Event</button>`;
+
+            li.innerHTML = `<div><strong>Name:</strong> ${event.name || 'N/A'}<br><strong>Date:</strong> ${event.localDate ? new Date(event.localDate).toLocaleDateString() : 'N/A'}<br><strong>Venue:</strong> ${event.venue || 'N/A'}</div><button class="details-button" data-event-id="${event.ID}" style="margin-top: 5px;">Select this Event</button><button onclick='eventAddPrivate("${event.ID}", "${event.name}")'>Add to my Events</button><p id="AddTo${event.ID}Error"></p>`;
             ul.appendChild(li);
         });
         eventsContainer.appendChild(ul);
@@ -196,7 +241,9 @@ async function getHotels(cityCode) {
     }
 }
 
-// Fetches the offers for a list of hotel IDs.
+// Fetches the offers for a list of hotel window.onload = async function () {
+
+
 async function getHotelOffers(searchParams) {
     const query = new URLSearchParams(searchParams).toString();
     const apiUrl = `/accomodationsoffers?${query}`;
@@ -307,7 +354,7 @@ async function searchForTravel() {
 
 
 function showConcertOnMap(lat, lng, title = "Selected Concert") {
-    console.log("SHOW marker at:", lat, lng, title);
+    //console.log("SHOW marker at:", lat, lng, title);
     if (!map) return;
     if (marker) map.removeLayer(marker);
     marker = L.marker([lat, lng]).addTo(map)
@@ -315,6 +362,9 @@ function showConcertOnMap(lat, lng, title = "Selected Concert") {
         .openPopup();
     map.setView([lat, lng], 15);
 }
+
+
+
 
 
 document.addEventListener('DOMContentLoaded', () => {

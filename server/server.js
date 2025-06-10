@@ -22,7 +22,6 @@ const { emitWarning } = require('process');
 const fetchEvents = require('./internal/api/fetchevents.js');
 const formatEvents = require('./internal/api/formatEvents.js');
 const fetchFlights = require('./internal/api/fetchFlights.js');
-const formatMovies = require('./internal/api/__ref_formatMovies.js');
 const eventDetails = require('./internal/api/fetcheventdetails.js');
 const formatEventDetails = require('./internal/api/formatEventDetails.js');
 const formatFlight = require('./internal/api/formatFlight.js');
@@ -136,8 +135,8 @@ app.get('/event/', async function (req, res) {
     const keyword = req.query.keyword;
     try {
         const eventsData = await fetchEvents(keyword);
-        console.log('Type of eventsData:', typeof eventsData);
-        console.log('Content of eventsData:', eventsData);
+        //console.log('Type of eventsData:', typeof eventsData);
+        //console.log('Content of eventsData:', eventsData);
         const formattedData = formatEvents(eventsData);
         res.status(200).send(formattedData); // Send status with data
     } catch (error) {
@@ -239,7 +238,9 @@ app.get('/profile/events', async function (req, res) { ensureAuthenticated(req, 
 app.get('/profile/events/:event', async function (req, res) { ensureAuthenticated(req, res, getEvent); })
 
 //Add an event to user
-app.put('/profile/events', async function (req, res) { ensureAuthenticated(req, res, putEvent); })
+app.put('/profile/events', async function (req, res) { 
+    ensureAuthenticated(req, res, putEvent); 
+})
 
 //Remove an event to user
 app.delete('/profile/events/:event', async function (req, res) { ensureAuthenticated(req, res, deleteEvent); })
