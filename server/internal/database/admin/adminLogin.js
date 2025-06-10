@@ -8,7 +8,7 @@ function adminLogin (req, res) {
             "To logout go to <a href='/logout'>this link</a> <br>" +
             "Else you might go <a href ='/admin.html'>here</a></p>");
     } else {
-        res.status(401).send("You shall feal this sword, foul white whale !!!");
+        res.status(401).send({message:"You shall feal this harpoon, white whale !!!"});
     }
 }
 

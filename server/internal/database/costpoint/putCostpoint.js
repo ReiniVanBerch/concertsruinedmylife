@@ -3,7 +3,7 @@ const db = require('../databaseConnector.js');
 async function putCostpoint(req, res){
 
     if (!req.session.username) {
-        return res.status(401).send('Not logged in');
+        return res.status(401).send({message:'Not logged in'});
     }
     else{
         let uname = req.session.username;
@@ -14,6 +14,7 @@ async function putCostpoint(req, res){
         if(!cost) cost = 0;
 
         const events = db.prepare('INSERT INTO costpoints (username, eventID, text, cost) VALUES (?, ?, ?, ?)').run(uname, event, text, cost);
+        res.status(200).send({message:"Added Costpoint"});
     }
 }
 

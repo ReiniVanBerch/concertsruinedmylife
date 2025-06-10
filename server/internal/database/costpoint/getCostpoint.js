@@ -5,7 +5,7 @@ async function getEvent(req, res){
     let id = req.params.event;
 
     if (!req.session.username) {
-        return res.status(401).send('Not logged in');
+        return res.status(401).send({message:'Not logged in'});
     }
     else{
         const getCostpoints = db.prepare('SELECT * FROM costpoints WHERE username = ? AND id = ?');
@@ -15,7 +15,7 @@ async function getEvent(req, res){
             res.status(200).send(costpoints);
         }
         else{
-            res.status(200).send({success:true, message: "No Costpoints found!"});
+            res.status(200).send({message: "No Costpoints found!"});
         }
     }
 }

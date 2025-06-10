@@ -1,6 +1,6 @@
 const db = require('../databaseConnector.js');
 
-async function allEvents(req, res){
+async function allCostpoints(req, res){
 
     const getCostpoints  = db.prepare('SELECT * FROM costpoints WHERE username = ?');
     const costpoints = await getCostpoints.all(req.session.username);
@@ -16,4 +16,4 @@ async function allEvents(req, res){
     }
 }
 
-module.exports = allEvents;
+module.exports = allCostpoints;
