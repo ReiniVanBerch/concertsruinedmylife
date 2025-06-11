@@ -122,25 +122,26 @@ async function fetchAndDisplayEventDetails(eventID) {
             document.getElementById('checkOutDate').value = eventDate.toISOString().split('T')[0];
 
             // --- SHOW ON MAP ---
+            // Check if event details include latitude and longitude for mapping
             if (eventDetail.lat && eventDetail.lng) {
+                // If coordinates exist, show the concert marker on the map
                 showConcertOnMap(eventDetail.lat, eventDetail.lng, eventDetail.venue || eventDetail.name);
-            } else {
-                console.warn("No latitude/longitude found for this event.");
-            }
 
-            if (eventDetail.lat && eventDetail.lng) {
-                showConcertOnMap(eventDetail.lat, eventDetail.lng, eventDetail.venue || eventDetail.name);
-                // Optionally: Remove any previous missing-location message
+                // remove any previous error message about missing location
                 const mapError = document.getElementById('map-geocode-error');
                 if (mapError) mapError.remove();
+
             } else {
+                // If no coordinates are available for the event,
                 console.warn("No latitude/longitude found for this event.");
 
-                // Show a message just below the event details or map
+                // Display a visible message to the user just below the map
                 let mapDiv = document.getElementById('map');
                 if (mapDiv) {
+                    // Check if the error message already exists to avoid duplicating it
                     let errorDiv = document.getElementById('map-geocode-error');
                     if (!errorDiv) {
+                        // Create a styled error message
                         errorDiv = document.createElement('div');
                         errorDiv.id = 'map-geocode-error';
                         errorDiv.style.color = 'red';
@@ -148,7 +149,7 @@ async function fetchAndDisplayEventDetails(eventID) {
                         errorDiv.style.marginTop = '8px';
                     }
                     errorDiv.textContent = "Sorry, there is no map location available for this event!";
-                    // Place the error below the map
+                    // Insert the error message just below the map div
                     mapDiv.parentNode.insertBefore(errorDiv, mapDiv.nextSibling);
                 }
             }
@@ -279,6 +280,10 @@ function displayHotelsWithOffers(hotels, offers) {
     const ul = document.createElement('ul');
     ul.className = 'hotel-list';
 
+    
+    // filter only hotels with offers
+    let hotelsWithOffers = hotels.filter(h => offerMap.has(h.hotelId));
+
     offers.forEach(offer => {
         const li = document.createElement('li');
         li.className = 'hotel-list-item';
@@ -300,6 +305,7 @@ function displayHotelsWithOffers(hotels, offers) {
 
      // --- Add hotel markers on map for currently displayed hotels
     showHotelsOnMap(hotelsWithOffers);
+    // hotelsWithOffers only, otherwise too many markers...
 }
 
 // MODIFIED: This function now chunks the hotel ID requests to avoid URL length errors.
@@ -365,42 +371,55 @@ async function searchForTravel() {
 }
 
 
+// --- Show a concert marker on the map using the custom concert icon ---
 function showConcertOnMap(lat, lng, title = "Selected Concert") {
 
+    // Define the red concert icon with correct size and anchor points
     const concertIcon = L.icon({
         iconUrl: 'concert_icon_red.png',
-        iconSize: [24, 32], 
-        iconAnchor: [12, 32],
-        popupAnchor: [0, -32]
+        iconSize: [24, 32],    // [width, height] in pixels
+        iconAnchor: [12, 32],  // The bottom-center tip of the icon will be at the marker's position
+        popupAnchor: [0, -32]  // Popup appears directly above the icon's tip
     });
-    //console.log("SHOW marker at:", lat, lng, title);
+
+    // Return early if the map is not initialized
     if (!map) return;
+
+    // Remove any existing concert marker to avoid multiple markers for different events
     if (marker) map.removeLayer(marker);
+
+    // Add the new concert marker at the given coordinates with the custom icon and popup
     marker = L.marker([lat, lng], {icon: concertIcon})
         .addTo(map)
         .bindPopup(title)
         .openPopup();
+
+    // Center and zoom the map on the concert location
     map.setView([lat, lng], 15);
-    
 }
 
-// --- MAP: Show multiple hotel markers ---
+// --- Place multiple hotel markers on the map, each with a custom blue icon. ---
 function showHotelsOnMap(hotels) {
+    // Remove previously shown hotel markers from the map
     hotelMarkers.forEach(m => map.removeLayer(m));
     hotelMarkers = [];
-    let bounds = [];
+    let bounds = []; // Store marker coordinates for fitBounds
 
+    // If there are no hotels to display, log and exit
     if (!hotels || !hotels.length) {
         console.log("No hotels to mark on map!");
         return;
     }
 
     console.log("Hotels to add markers for:", hotels);
+
     hotels.forEach(hotel => {
-        // LOGGING
+        // Output hotel coordinates for debugging
         console.log("Check hotel coords:", hotel.name, hotel.latitude, hotel.longitude);
 
+        // Only display markers for hotels that have coordinates
         if (hotel.latitude && hotel.longitude) {
+            // Create a marker for each hotel using the custom blue icon
             let hMarker = L.marker([hotel.latitude, hotel.longitude], {icon: L.icon({
                 iconUrl: 'hotel_icon_blue.png',
                 iconSize: [24, 32],
@@ -410,21 +429,23 @@ function showHotelsOnMap(hotels) {
             .addTo(map)
             .bindPopup(`<strong>${hotel.name}</strong>${hotel.address ? '<br>' + hotel.address : ''}`);
 
-            // --- Make popup open on hover ---
+            // Make the hotel popup open on mouseover and close on mouseout
             hMarker.on('mouseover', function(e) { this.openPopup(); });
             hMarker.on('mouseout', function(e) { this.closePopup(); });
 
+            // Add marker to management array and its position to the bounds array
             hotelMarkers.push(hMarker);
             bounds.push([hotel.latitude, hotel.longitude]);
         }
     });
 
-     // Optionally add the concert marker's location to bounds so both are visible (if marker exists)
+    // Add the concert marker's location to bounds, so both concert and hotels are visible
     if (marker && marker.getLatLng) {
         const eventLatLng = marker.getLatLng();
         bounds.push([eventLatLng.lat, eventLatLng.lng]);
     }
-    // Zoom out to fit all markers
+
+    // Adjust the map view so all markers (hotels and concert) are visible with padding
     if (bounds.length > 0) {
         map.fitBounds(bounds, {padding: [30, 30]});
     }
